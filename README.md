@@ -28,11 +28,14 @@ Maps. Le mobile n'est pas un cas secondaire : c'est le cas principal.
 
 ## État actuel
 
-Prototype. `index.html` est une page de démonstration qui ouvre un module de
-réservation Calendly dans une fenêtre modale, sur un compte qui existe déjà. Son
-style est encore écrit dans une balise `<style>` : il devra passer dans
-`style.css`, aujourd'hui vide. Rien n'est figé : ni le contenu, ni le style, ni
-le moteur de rendez-vous.
+La page est écrite et branchée sur l'agenda Cal.com
+(`cal.com/phoenixroyal78`) : accroche, carte des prestations, informations
+pratiques, réservation. La structure et le style sont en place.
+
+**Le contenu, lui, est un jeu d'exemple.** Les sept prestations, leurs durées,
+leurs tarifs, le secteur, les horaires, le téléphone et le SIREN sont des
+valeurs de démonstration, signalées par un encadré en tête d'`index.html`. Elles
+doivent être remplacées par les vraies avant toute mise en ligne.
 
 ## Prise de rendez-vous : l'arbitrage
 
@@ -165,8 +168,9 @@ GitHub Pages), en HTTPS, sur son propre nom de domaine.
 ## Structure
 
 ```
-index.html    page unique ; aujourd'hui un prototype : un bouton qui ouvre Calendly
-style.css     feuille de style (vide pour l'instant, le prototype style en ligne)
+index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fichier
+style.css     feuille de style
+script.js     chargement de l'agenda Cal.com à la demande
 README.md     ce fichier
 ```
 

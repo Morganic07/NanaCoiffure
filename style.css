@@ -1,0 +1,344 @@
+/* Phoenix Royal — feuille de style unique.
+   Noir, blanc, et le rose tenu en réserve : filet du titre, bouton, focus. */
+
+:root {
+  color-scheme: light;
+
+  --noir: #000000;
+  --blanc: #ffffff;
+  --gris: #5a5a5a;
+  --trait: #d8d8d8;
+
+  --rose: #9b1b45;        /* 7,4:1 sur blanc — lisible en texte */
+  --rose-clair: #f6e7ec;  /* aplat de section */
+
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --marge: 1.25rem;
+  --colonne: 40rem;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--blanc);
+  color: var(--noir);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0;
+}
+
+p { margin: 0; }
+
+a { color: var(--rose); }
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Lien d'évitement ────────────────────────────────────────────────── */
+
+.saut {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--noir);
+  color: var(--blanc);
+  padding: 0.75rem 1rem;
+  z-index: 10;
+}
+
+.saut:focus {
+  left: 0;
+}
+
+/* ── Bandeau ─────────────────────────────────────────────────────────── */
+
+.bandeau {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem var(--marge);
+  background: var(--blanc);
+  border-bottom: 1px solid var(--trait);
+}
+
+.bandeau__nom {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  letter-spacing: 0.01em;
+  color: var(--noir);
+  text-decoration: none;
+}
+
+.bandeau__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.9375rem;
+}
+
+.bandeau__nav a {
+  color: var(--noir);
+  text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid transparent;
+}
+
+.bandeau__nav a:hover { border-bottom-color: var(--noir); }
+
+.bandeau__reserver {
+  color: var(--rose);
+  border-bottom-color: var(--rose);
+}
+
+.bandeau__reserver:hover { border-bottom-color: var(--rose); }
+
+/* ── Accueil ─────────────────────────────────────────────────────────── */
+
+/* La gouttière est un padding : la largeur maximale l'inclut, pour que le
+   texte de l'accueil tombe sur la même verticale que celui des sections. */
+.accueil {
+  max-width: calc(var(--colonne) + var(--marge) * 2);
+  margin: 0 auto;
+  padding: 3.5rem var(--marge) 3rem;
+}
+
+.accueil__titre {
+  font-size: clamp(2.75rem, 13vw, 5rem);
+  letter-spacing: -0.015em;
+}
+
+.accueil__promesse {
+  font-family: var(--serif);
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--rose);
+  display: inline-block;
+}
+
+.accueil__texte {
+  max-width: 34rem;
+  margin-top: 1.25rem;
+  color: var(--gris);
+}
+
+.accueil__actions { margin-top: 2rem; }
+
+/* ── Bouton ──────────────────────────────────────────────────────────── */
+
+.bouton {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.75rem 1.75rem;
+  background: var(--rose);
+  color: var(--blanc);
+  font: inherit;
+  font-size: 1rem;
+  text-decoration: none;
+  border: 1px solid var(--rose);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.bouton:hover {
+  background: var(--noir);
+  border-color: var(--noir);
+}
+
+.bouton[disabled] {
+  background: var(--gris);
+  border-color: var(--gris);
+  cursor: default;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────── */
+
+/* Le bandeau est collant : sans cette réserve, un lien d'ancre amène le titre
+   de section juste dessous, donc caché. */
+.section,
+.accueil {
+  scroll-margin-top: 4.5rem;
+}
+
+.section {
+  padding: 3rem var(--marge);
+}
+
+.section--pale {
+  background: var(--rose-clair);
+}
+
+/* La colonne est tenue par ce conteneur, et par lui seul : la porter sur
+   chaque enfant recentrerait tout élément plus étroit, qui cesserait alors
+   d'être aligné sur son titre. */
+.colonne {
+  max-width: var(--colonne);
+  margin-inline: auto;
+}
+
+.section__titre {
+  font-size: clamp(1.75rem, 7vw, 2.5rem);
+}
+
+.section__chapo {
+  margin: 1rem 0 0;
+  color: var(--gris);
+  max-width: 34rem;
+}
+
+/* ── La carte des prestations ────────────────────────────────────────── */
+
+.carte {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+}
+
+.presta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--trait);
+}
+
+.presta:last-child { border-bottom: 1px solid var(--trait); }
+
+.presta__nom {
+  font-size: 1.25rem;
+}
+
+.presta__points { display: none; }
+
+.presta__prix {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.presta__detail {
+  grid-column: 1 / -1;
+  margin-top: 0.375rem;
+  font-size: 0.9375rem;
+  color: var(--gris);
+  max-width: 32rem;
+}
+
+/* Les points de conduite d'une carte de salon : seulement quand il y a
+   la place de les tracer sur une seule ligne. */
+@media (min-width: 30rem) {
+  .presta {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .presta__points {
+    display: block;
+    align-self: center;
+    border-bottom: 1px dotted var(--trait);
+    transform: translateY(-0.2em);
+  }
+}
+
+/* ── Informations pratiques ──────────────────────────────────────────── */
+
+.infos {
+  margin: 2.5rem 0 0;
+}
+
+.infos dt {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.infos dd {
+  margin: 0.25rem 0 1.25rem;
+  color: #3d3d3d;
+  max-width: 34rem;
+}
+
+.infos a { color: var(--rose); }
+
+/* ── Agenda ──────────────────────────────────────────────────────────── */
+
+.agenda { margin-top: 2.5rem; }
+
+.agenda__accueil {
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: 2px;
+}
+
+.agenda__mention {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+
+.agenda__cible {
+  min-height: 34rem;
+  overflow: auto;
+}
+
+.agenda__repli {
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--gris);
+}
+
+.agenda__erreur {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-left: 3px solid var(--rose);
+  background: var(--rose-clair);
+  color: var(--noir);
+  font-size: 0.9375rem;
+}
+
+/* ── Pied de page ────────────────────────────────────────────────────── */
+
+.pied {
+  padding: 2.5rem var(--marge) 3rem;
+  border-top: 1px solid var(--trait);
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+
+.pied__ligne {
+  margin: 0 0 0.5rem;
+  max-width: 34rem;
+}
+
+/* ── Confort de lecture ──────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

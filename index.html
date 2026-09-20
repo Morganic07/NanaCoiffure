@@ -1,144 +1,170 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prendre RDV - Phoenix Royal</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 16px;
-            opacity: 0.95;
-            line-height: 1.5;
-        }
-
-        .content {
-            padding: 40px 30px;
-        }
-
-        .cta-section {
-            text-align: center;
-            padding: 30px 0;
-        }
-
-        .cta-section h2 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .cta-section p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .btn-calendly {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-calendly:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-calendly:active {
-            transform: translateY(0);
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .content {
-                padding: 25px 20px;
-            }
-
-            .btn-calendly {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phoenix Royal — coiffure à domicile</title>
+<meta name="description" content="Coiffure à domicile dans les Yvelines. Coupe, couleur, balayage et coiffure d'événement. Prise de rendez-vous en ligne.">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Phoenix Royal</h1>
-            <p>Prenez rendez-vous facilement</p>
-        </div>
 
-        <div class="content">
-            <div class="cta-section">
-                <h2>Réservez votre créneau</h2>
-                <p>Cliquez sur le bouton ci-dessous pour choisir un rendez-vous</p>
-                <button class="btn-calendly" onclick="Calendly.initPopupWidget({url: 'https://calendly.com/phoenixroyal78'}); return false;">
-                    Prendre RDV maintenant
-                </button>
-            </div>
-        </div>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  À REMPLACER AVANT MISE EN LIGNE — valeurs d'exemple, pas des vraies ║
+  ║  · les sept prestations, leurs durées et leurs tarifs                ║
+  ║  · le secteur de déplacement et les horaires                         ║
+  ║  · le numéro de téléphone (06 00 00 00 00 est un faux)               ║
+  ║  · le SIREN dans le pied de page                                     ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+-->
 
-        <div class="footer">
-            <p>© 2026 Phoenix Royal. Tous droits réservés.</p>
-        </div>
+<a class="saut" href="#contenu">Aller au contenu</a>
+
+<header class="bandeau">
+  <a class="bandeau__nom" href="#contenu">Phoenix&nbsp;Royal</a>
+  <nav class="bandeau__nav" aria-label="Navigation principale">
+    <a href="#carte">Prestations</a>
+    <a href="#infos">Infos</a>
+    <a href="#reserver" class="bandeau__reserver">Réserver</a>
+  </nav>
+</header>
+
+<main id="contenu">
+
+  <section class="accueil">
+    <h1 class="accueil__titre">Phoenix&nbsp;Royal</h1>
+    <p class="accueil__promesse">Coiffure à domicile, dans les Yvelines.</p>
+    <p class="accueil__texte">
+      Vous choisissez le créneau, je viens chez vous avec tout le matériel.
+      Pas de salle d'attente, pas d'heure de retard.
+    </p>
+    <p class="accueil__actions">
+      <a class="bouton" href="#reserver">Prendre rendez-vous</a>
+    </p>
+  </section>
+
+  <section id="carte" class="section" aria-labelledby="titre-carte">
+    <div class="colonne">
+      <h2 id="titre-carte" class="section__titre">La carte</h2>
+      <p class="section__chapo">
+        Les tarifs comprennent le déplacement. Un devis est fait sur place avant
+        toute couleur, parce qu'une longueur change le temps et la quantité.
+      </p>
+
+      <ul class="carte">
+        <li class="presta">
+          <h3 class="presta__nom">Coupe femme</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">35&nbsp;€</p>
+          <p class="presta__detail">Shampooing, coupe et coiffage. Compter 45 minutes.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Brushing</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">25&nbsp;€</p>
+          <p class="presta__detail">Seul ou après une coupe. Compter 30 minutes.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Coupe homme</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">20&nbsp;€</p>
+          <p class="presta__detail">Tondeuse ou ciseaux, contours nets. Compter 30 minutes.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Coupe enfant</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">18&nbsp;€</p>
+          <p class="presta__detail">Jusqu'à 12 ans. Compter 30 minutes.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Couleur racines</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">55&nbsp;€</p>
+          <p class="presta__detail">Pose, temps de pause et coiffage. Compter 1 h 30.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Balayage</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">85&nbsp;€</p>
+          <p class="presta__detail">Éclaircissement mèche à mèche, patine comprise. Compter 2 h 30.</p>
+        </li>
+        <li class="presta">
+          <h3 class="presta__nom">Coiffure d'événement</h3>
+          <span class="presta__points" aria-hidden="true"></span>
+          <p class="presta__prix">60&nbsp;€</p>
+          <p class="presta__detail">Mariage, cérémonie. Essai possible en amont. Compter 1 heure.</p>
+        </li>
+      </ul>
     </div>
+  </section>
 
-    <script src="https://assets.calendly.com/assets/external/widget.js"></script>
+  <section id="infos" class="section section--pale" aria-labelledby="titre-infos">
+    <div class="colonne">
+      <h2 id="titre-infos" class="section__titre">Comment ça se passe</h2>
+      <dl class="infos">
+        <dt>Secteur</dt>
+        <dd>Yvelines, jusqu'à 20 km autour de Versailles. Au-delà, écrivez-moi.</dd>
+
+        <dt>Horaires</dt>
+        <dd>Du mardi au samedi, de 9 h à 19 h. Nocturne le jeudi jusqu'à 20 h.</dd>
+
+        <dt>Sur place</dt>
+        <dd>J'apporte le bac, les serviettes et les produits. Il me faut un point d'eau et une prise.</dd>
+
+        <dt>Paiement</dt>
+        <dd>Espèces, carte ou virement, à la fin du rendez-vous.</dd>
+
+        <dt>Annulation</dt>
+        <dd>Prévenez-moi 24 heures à l'avance : le créneau repart aussitôt à quelqu'un d'autre.</dd>
+
+        <dt>Téléphone</dt>
+        <dd><a href="tel:+33600000000">06 00 00 00 00</a></dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="reserver" class="section" aria-labelledby="titre-reserver">
+    <div class="colonne">
+      <h2 id="titre-reserver" class="section__titre">Réserver</h2>
+      <p class="section__chapo">
+        Choisissez la prestation puis le créneau. Vous recevez la confirmation
+        par courriel, et le rendez-vous se pose directement dans mon agenda.
+      </p>
+
+      <div class="agenda">
+        <div class="agenda__accueil" id="agenda-accueil">
+          <button class="bouton" type="button" id="agenda-bouton">Voir les créneaux</button>
+          <p class="agenda__mention">
+            L'agenda est fourni par Cal.com et ne se charge qu'à cette demande.
+          </p>
+        </div>
+
+        <div id="agenda-cible" class="agenda__cible" hidden></div>
+
+        <p class="agenda__repli">
+          Vous pouvez aussi
+          <a href="https://cal.com/phoenixroyal78">ouvrir la page de réservation</a>
+          dans un nouvel onglet, ou appeler le
+          <a href="tel:+33600000000">06 00 00 00 00</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pied">
+  <div class="colonne">
+    <p class="pied__ligne">Phoenix Royal, micro-entreprise. SIREN 000 000 000.</p>
+    <p class="pied__ligne">
+      Ce site ne recueille aucune donnée. Les coordonnées laissées au moment de
+      la réservation sont traitées par Cal.com, qui héberge l'agenda.
+    </p>
+    <p class="pied__ligne">© 2026 Phoenix Royal</p>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
 </body>
 </html>
