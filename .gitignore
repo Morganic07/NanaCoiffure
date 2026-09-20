@@ -1,0 +1,17 @@
+# Outillage local, jamais versionné
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.mcp.json
+CLAUDE-SECURITY-*
+review-pr.md
+ui-ux.md
+security.md
+
+# Secrets
+.env
+.env.local
+
+# Système
+.DS_Store
+Thumbs.db
