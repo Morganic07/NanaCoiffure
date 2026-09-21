@@ -11,7 +11,7 @@
      7. Prestations      la liste des tarifs
      8. Informations     la liste « Comment ça se passe »
      9. Agenda           le module de réservation
-    10. Galerie          la bande de photos qui glisse
+    10. Galerie          la grille de photos
     11. Pied de page
     12. Animations       tout ce qui bouge, et rien d'essentiel
 
@@ -83,8 +83,7 @@
   --r-pilule: 999px;
   --r-galerie: 16px;
 
-  /* Galerie : côté d'une photo, et écart entre deux */
-  --galerie-vue: min(64vw, 400px);
+  /* Galerie : l'écart entre deux photos de la grille */
   --galerie-espace: 1rem;
 
   /* Tailles de mise en page */
@@ -140,8 +139,8 @@ a {
 
 
 /* Le contour au clavier, indispensable pour savoir où l'on se trouve en
-   naviguant à la touche Tab. `[tabindex]` couvre les blocs rendus
-   focalisables à la main, comme la galerie. Ne jamais le supprimer. */
+   naviguant à la touche Tab. `[tabindex]` couvre les blocs qu'on rendrait
+   focalisables à la main. Ne jamais le supprimer. */
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
@@ -438,76 +437,41 @@ button:focus-visible,
 
 
 /* === 10. Galerie ===========================================
-   Deux états, et c'est le script qui fait basculer du premier au second.
-
-   Par défaut — sans JavaScript, ou si la visiteuse a demandé à limiter les
-   animations — c'est une simple bande de photos qui défile au doigt. Rien
-   à apprendre, rien qui puisse casser.
-
-   Avec le script, l'attribut `data-slider` transforme la bande en un
-   défilé en perspective : les photos sont alors placées une à une par
-   `script.js`, qui écrit leur `transform` à chaque image.               */
+   Une grille de photos carrées : deux colonnes sur téléphone, trois puis
+   quatre quand l'écran s'élargit. Aucun JavaScript — l'effet d'apparition
+   est en partie 12, et la grille reste lisible sans lui.                */
 
 .galerie {
-  margin-top: 2.25rem;
-  background: var(--encre);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-
-.galerie__liste {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--galerie-espace);
-  margin: 0;
-  padding: var(--galerie-espace);
+  margin: 2.25rem 0 0;
+  padding: 0;
   list-style: none;
 }
 
+/* La photo grossit à l'intérieur de sa case, qui la recadre. */
 .galerie__vue {
-  flex: 0 0 var(--galerie-vue);
+  overflow: hidden;
+  border-radius: var(--r-galerie);
 }
 
 .galerie__vue img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  border-radius: var(--r-galerie);
-  user-select: none;
-  -webkit-user-select: none;
 }
 
-/* L'état piloté par le script. */
-.galerie[data-slider] {
-  height: var(--galerie-vue);
-  overflow: hidden;
-  cursor: grab;
-  touch-action: pan-y;   /* le doigt vertical continue de faire défiler la page */
+@media (min-width: 30rem) {
+  .galerie {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.galerie[data-slider]:active {
-  cursor: grabbing;
-}
-
-.galerie[data-slider] .galerie__liste {
-  position: relative;
-  display: block;
-  height: 100%;
-  padding: 0;
-}
-
-/* Chaque photo est posée au centre puis déplacée par le script. */
-.galerie[data-slider] .galerie__vue {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: var(--galerie-vue);
-  height: var(--galerie-vue);
-  transform: translate3d(0, -50%, 0);
-  will-change: transform, filter;
-}
-
-.galerie[data-slider] .galerie__vue img {
-  height: 100%;
+@media (min-width: 46rem) {
+  .galerie {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 
@@ -578,5 +542,55 @@ button:focus-visible,
 
   .agenda__cible[data-etat="pret"] {
     animation: monter 420ms ease backwards;
+  }
+
+  /* La galerie, en deux temps.
+
+     1. L'entrée : fondu, puis grossissement une fois le fondu terminé —
+        c'est le rôle du délai sur `transform`. Déclenchée une fois, à
+        l'apparition de la photo, par le même mécanisme que les lignes de
+        tarifs : le script pose `data-anime` sur la grille, puis `est-entree`
+        sur chaque case.
+
+        Pourquoi pas une animation liée au défilement ici aussi ? Parce que la
+        galerie est la dernière section : entre le moment où une photo entre
+        dans l'écran et la butée de défilement, il ne reste qu'une centaine de
+        pixels de course. L'animation sauterait au lieu de se dérouler. */
+  .galerie[data-anime] .galerie__vue img {
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 600ms ease, transform 900ms cubic-bezier(0.2, 0.7, 0.3, 1);
+    transition-delay: 0ms, 600ms;   /* le grossissement attend la fin du fondu */
+  }
+
+  .galerie[data-anime] .galerie__vue.est-entree img {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  /*  2. La sortie : un fondu lié au défilement, qui ne se joue que pendant que
+        la photo quitte l'écran par le haut. Tant que la galerie est la
+        dernière section, cette phase n'est jamais atteinte et n'a donc aucun
+        effet ; elle prendra vie dès qu'une section viendra s'ajouter en
+        dessous.
+
+        `@supports` est indispensable : un navigateur qui ignore
+        `animation-timeline` jouerait ce fondu comme une animation ordinaire,
+        et les photos finiraient invisibles. */
+  @supports (animation-timeline: view()) {
+    .galerie__vue img {
+      /* `forwards` et non `both` : avec `both`, la première étape du fondu
+         (`opacity: 1`) s'appliquerait **avant** la plage de sortie, et une
+         animation l'emporte sur une déclaration normale — elle écraserait le
+         fondu d'entrée ci-dessus, qui ne se verrait jamais. */
+      animation: galerie-sortie linear forwards;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+
+  @keyframes galerie-sortie {
+    from { opacity: 1; }
+    to   { opacity: 0; }
   }
 }

@@ -1,3 +1,13 @@
+/* Comportements de la page. Trois morceaux indépendants : chacun vérifie ce
+   dont il a besoin et s'abstient si l'élément manque.
+
+   Principe commun : sans ce fichier, la page reste lisible et utilisable. Le
+   script ajoute du confort — l'agenda intégré, le filet du bandeau, l'arrivée
+   des lignes de tarifs — jamais une condition d'accès au contenu.
+
+   La galerie passe par la même boucle d'arrivée que les lignes de tarifs :
+   son fondu d'entrée dépend donc de ce fichier. Seul son fondu de sortie est
+   écrit en CSS, piloté par le défilement. */
 
 (function () {
   "use strict";
@@ -200,14 +210,22 @@
   })();
 
 
-  (function arrivees() {
-    var liste = document.getElementById("carte-liste");
+  /* Deux listes s'animent à l'entrée dans l'écran, de la même façon : les
+     lignes de tarifs et les photos de la galerie. Le CSS décrit à quoi
+     ressemble l'arrivée ; ici on se contente de poser `data-anime` sur la
+     liste, puis `est-entree` sur chaque élément quand il apparaît. */
+
+  [
+    { liste: "carte-liste", element: ".presta" },
+    { liste: "galerie-liste", element: ".galerie__vue" }
+  ].forEach(function (groupe) {
+    var liste = document.getElementById(groupe.liste);
 
     if (!liste || sobre.matches || !("IntersectionObserver" in window)) {
       return;
     }
 
-    var cartes = liste.querySelectorAll(".presta");
+    var cartes = liste.querySelectorAll(groupe.element);
 
     function tout_montrer() {
       cartes.forEach(function (c) {
@@ -215,7 +233,9 @@
       });
     }
 
-    
+    /* `data-anime` conditionne le masquage initial côté CSS : il n'est posé
+       qu'ici, et seulement une fois l'observateur prêt. Sans script, rien
+       n'est masqué. */
     liste.setAttribute("data-anime", "");
 
     var observateur = new IntersectionObserver(
@@ -233,211 +253,27 @@
     cartes.forEach(function (c) {
       observateur.observe(c);
     });
-    
-    window.setTimeout(function () {
-      if (!liste.querySelector(".presta.est-entree")) {
+
+    /* Filet de sécurité. Il doit rattraper un observateur en panne, pas une
+       visiteuse qui n'est pas encore descendue : une liste hors écran n'a
+       rien à rattraper, on repasse plus tard. Sans cette condition, la
+       galerie — dernière section de la page — serait révélée avant qu'on
+       l'atteigne, et son apparition ne se verrait jamais. */
+    function surveiller() {
+      var boite = liste.getBoundingClientRect();
+      var aLEcran = boite.top < window.innerHeight - 40 && boite.bottom > 40;
+
+      if (!aLEcran) {
+        window.setTimeout(surveiller, 2000);
+        return;
+      }
+
+      if (!liste.querySelector(groupe.element + ".est-entree")) {
         observateur.disconnect();
         tout_montrer();
       }
-    }, 3000);
-  })();
-
-  /* ── 4. La galerie en perspective ───────────────────────────────────────
-*/
-
-  (function galerie() {
-    var vitre = document.getElementById("galerie-vitre");
-    var liste = document.getElementById("galerie-liste");
-
-    if (!vitre || !liste || sobre.matches || !("ResizeObserver" in window)) {
-      return;
     }
 
-    // Réglages repris du composant d'origine.
-    var ECART = 40;           // l'espace entre deux photos, en pixels
-    var DOUCEUR = 0.02;       // plus c'est bas, plus le glissement traîne
-    var ASSOMBRIT = 0.85;     // combien les petites photos s'éteignent
-    var ECHELLE_MAX = 2.5;
-    var ECHELLE_MIN = 0.1;
-    var MOLETTE = 1;
-    var GLISSE = 1.5;
-
-    [].slice.call(liste.children).forEach(function (vue) {
-      var copie = vue.cloneNode(true);
-      copie.setAttribute("aria-hidden", "true");
-      liste.appendChild(copie);
-    });
-
-    var vues = [].slice.call(liste.children);
-    var cible = 0;      // là où la bande doit aller
-    var actuel = 0;     // là où elle est vraiment, qui rattrape la cible
-    var largeur = 0;
-    var largeurVue = 0;
-    var pas = 0;
-    var image = 0;      // le numéro d'animation en cours, 0 si arrêtée
-    var dernier = 0;
-
-    function mesurer() {
-      largeur = vitre.clientWidth;
-      largeurVue = vues[0].offsetWidth;
-      pas = largeurVue + ECART;
-    }
-
-    function enroule(valeur, span) {
-      return ((valeur % span) + span) % span;
-    }
-
-    function placer(ecoule) {
-      if (!pas || !largeur) {
-        return;
-      }
-
-      var span = vues.length * pas;
-
-      if (actuel > span || actuel < -span) {
-        var saut = Math.trunc(actuel / span) * span;
-        actuel -= saut;
-        cible -= saut;
-      }
-      
-      actuel += (cible - actuel) * (1 - Math.pow(1 - DOUCEUR, ecoule * 60));
-
-      var marge = (largeur - largeurVue) / 2;
-      var moitie = largeur / 2;
-
-      for (var i = 0; i < vues.length; i += 1) {
-        var brut = i * pas - actuel + marge;
-        var x = enroule(brut + pas, span) - pas;
-        var distance = x + largeurVue / 2 - moitie;
-        var echelle;
-        var pousse;
-
-        if (distance > 0) {
-          echelle = Math.min(ECHELLE_MAX, 1 + distance / largeur);
-          pousse = (echelle - 1) * largeurVue * 0.75;
-        } else {
-          echelle = Math.max(ECHELLE_MIN, 1 + distance / largeur);
-          pousse = 0;
-        }
-
-        vues[i].style.transform =
-          "translate3d(" + (x + pousse) + "px, -50%, 0) scale(" + echelle + ")";
-
-        vues[i].style.filter =
-          echelle < 1
-            ? "brightness(" +
-              (1 - ((1 - echelle) / (1 - ECHELLE_MIN)) * ASSOMBRIT) +
-              ")"
-            : "none";
-      }
-    }
-
-    function battement(maintenant) {
-      image = window.requestAnimationFrame(battement);
-      var ecoule = dernier ? Math.min((maintenant - dernier) / 1000, 0.1) : 1 / 60;
-      dernier = maintenant;
-      placer(ecoule);
-    }
-
-    function demarrer() {
-      if (!image) {
-        dernier = 0;
-        image = window.requestAnimationFrame(battement);
-      }
-    }
-
-    function arreter() {
-      if (image) {
-        window.cancelAnimationFrame(image);
-        image = 0;
-      }
-    }
-
-    
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entrees) {
-        if (entrees[0].isIntersecting) {
-          demarrer();
-        } else {
-          arreter();
-        }
-      }).observe(vitre);
-    } else {
-      demarrer();
-    }
-
-    new ResizeObserver(function () {
-      mesurer();
-      placer(0);
-    }).observe(vitre);
-
-    /* Bascule en mode piloté, puis placement immédiat : sans ce premier
-       calcul, les photos passeraient par une image empilées au même endroit. */
-    vitre.setAttribute("data-slider", "");
-    mesurer();
-    placer(0);
-$
-
-    vitre.addEventListener(
-      "wheel",
-      function (evenement) {
-        if (Math.abs(evenement.deltaX) <= Math.abs(evenement.deltaY)) {
-          return;
-        }
-
-        evenement.preventDefault();
-        cible += evenement.deltaX * MOLETTE;
-      },
-      { passive: false }
-    );
-
-    var doigt = null;
-    var dernierX = 0;
-
-    vitre.addEventListener("pointerdown", function (evenement) {
-      if (doigt !== null) {
-        return;
-      }
-
-      doigt = evenement.pointerId;
-      dernierX = evenement.clientX;
-      vitre.setPointerCapture(doigt);
-    });
-
-    vitre.addEventListener("pointermove", function (evenement) {
-      if (doigt !== evenement.pointerId) {
-        return;
-      }
-
-      cible += (dernierX - evenement.clientX) * GLISSE;
-      dernierX = evenement.clientX;
-    });
-
-    function lacher(evenement) {
-      if (doigt !== evenement.pointerId) {
-        return;
-      }
-
-      if (vitre.hasPointerCapture(doigt)) {
-        vitre.releasePointerCapture(doigt);
-      }
-
-      doigt = null;
-    }
-
-    vitre.addEventListener("pointerup", lacher);
-    vitre.addEventListener("pointercancel", lacher);
-
-    // Au clavier : une photo par appui.
-    vitre.addEventListener("keydown", function (evenement) {
-      var sens = { ArrowRight: 1, ArrowLeft: -1 }[evenement.key];
-
-      if (!sens || evenement.altKey || evenement.ctrlKey || evenement.metaKey) {
-        return;
-      }
-
-      evenement.preventDefault();
-      cible += pas * sens;
-    });
-  })();
+    window.setTimeout(surveiller, 3000);
+  });
 })();

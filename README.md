@@ -201,7 +201,7 @@ index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fic
 style.css     feuille de style
 script.js     agenda Cal.com chargé à l'approche de la section, bandeau, arrivées
 images/       sept cartons d'attente en WebP, à écraser par ses photos
-images/galerie/  huit autres, carrés, pour la bande de réalisations
+images/galerie/  huit autres, carrés, pour la grille de réalisations
 fonts/        Merosa (.otf d'origine et .woff2 dérivé) et Montserrat, licence jointe
 README.md     ce fichier
 ```
