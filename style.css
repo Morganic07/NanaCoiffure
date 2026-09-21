@@ -11,8 +11,9 @@
      7. Prestations      la liste des tarifs
      8. Informations     la liste « Comment ça se passe »
      9. Agenda           le module de réservation
-    10. Pied de page
-    11. Animations       tout ce qui bouge, et rien d'essentiel
+    10. Galerie          la bande de photos qui glisse
+    11. Pied de page
+    12. Animations       tout ce qui bouge, et rien d'essentiel
 
    Deux règles tenues d'un bout à l'autre :
    — toute couleur, et toute taille réutilisée à plusieurs endroits, est
@@ -78,8 +79,13 @@
   --texte: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* Arrondis */
-  --r-media: 12px;               
-  --r-pilule: 999px;             
+  --r-media: 12px;
+  --r-pilule: 999px;
+  --r-galerie: 16px;
+
+  /* Galerie : côté d'une photo, et écart entre deux */
+  --galerie-vue: min(64vw, 400px);
+  --galerie-espace: 1rem;
 
   /* Tailles de mise en page */
   --marge: 1.25rem;              
@@ -133,8 +139,12 @@ a {
 }
 
 
+/* Le contour au clavier, indispensable pour savoir où l'on se trouve en
+   naviguant à la touche Tab. `[tabindex]` couvre les blocs rendus
+   focalisables à la main, comme la galerie. Ne jamais le supprimer. */
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+[tabindex]:focus-visible {
   outline: 2px solid var(--rose);
   outline-offset: 3px;
   border-radius: 4px;
@@ -415,11 +425,6 @@ button:focus-visible {
   margin: 1.5rem 0;
 }
 
-.agenda__repli {
-  margin-top: 1.5rem;
-  font-size: 0.9375rem;
-  color: var(--gris);
-}
 
 .agenda__erreur {
   margin-top: 1.5rem;
@@ -432,7 +437,81 @@ button:focus-visible {
 }
 
 
-/* === 10. Pied de page ======================================         */
+/* === 10. Galerie ===========================================
+   Deux états, et c'est le script qui fait basculer du premier au second.
+
+   Par défaut — sans JavaScript, ou si la visiteuse a demandé à limiter les
+   animations — c'est une simple bande de photos qui défile au doigt. Rien
+   à apprendre, rien qui puisse casser.
+
+   Avec le script, l'attribut `data-slider` transforme la bande en un
+   défilé en perspective : les photos sont alors placées une à une par
+   `script.js`, qui écrit leur `transform` à chaque image.               */
+
+.galerie {
+  margin-top: 2.25rem;
+  background: var(--encre);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.galerie__liste {
+  display: flex;
+  gap: var(--galerie-espace);
+  margin: 0;
+  padding: var(--galerie-espace);
+  list-style: none;
+}
+
+.galerie__vue {
+  flex: 0 0 var(--galerie-vue);
+}
+
+.galerie__vue img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--r-galerie);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* L'état piloté par le script. */
+.galerie[data-slider] {
+  height: var(--galerie-vue);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;   /* le doigt vertical continue de faire défiler la page */
+}
+
+.galerie[data-slider]:active {
+  cursor: grabbing;
+}
+
+.galerie[data-slider] .galerie__liste {
+  position: relative;
+  display: block;
+  height: 100%;
+  padding: 0;
+}
+
+/* Chaque photo est posée au centre puis déplacée par le script. */
+.galerie[data-slider] .galerie__vue {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--galerie-vue);
+  height: var(--galerie-vue);
+  transform: translate3d(0, -50%, 0);
+  will-change: transform, filter;
+}
+
+.galerie[data-slider] .galerie__vue img {
+  height: 100%;
+}
+
+
+/* === 11. Pied de page ======================================         */
 
 .pied {
   padding: 3rem var(--marge);
@@ -447,7 +526,7 @@ button:focus-visible {
 }
 
 
-/* === 11. Animations ========================================  */
+/* === 12. Animations ========================================  */
 
 @media (prefers-reduced-motion: no-preference) {
 

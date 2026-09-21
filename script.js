@@ -8,9 +8,11 @@
   (function agenda() {
     var LIEN_CAL = "phoenixroyal78";
     var SCRIPT_CAL = "https://app.cal.com/embed/embed.js";
-    var MESSAGE_ECHEC =
-      "L'agenda n'a pas pu se charger. Utilisez le lien de réservation " +
-      "ci-dessous, ou appelez-moi.";
+    var TELEPHONE = "06 00 00 00 00";
+
+    /* Le message d'échec porte lui-même ses deux issues, au lieu de renvoyer
+       à un lien voisin : la page peut changer, l'encadré reste vrai. */
+    var MESSAGE_ECHEC = "L'agenda n'a pas pu se charger. Vous pouvez ";
 
     var bloc = document.getElementById("agenda");
     var cible = document.getElementById("agenda-cible");
@@ -64,7 +66,21 @@
       var alerte = document.createElement("p");
       alerte.className = "agenda__erreur";
       alerte.setAttribute("role", "alert");
-      alerte.textContent = MESSAGE_ECHEC;
+      alerte.appendChild(document.createTextNode(MESSAGE_ECHEC));
+
+      var versCal = document.createElement("a");
+      versCal.href = "https://cal.com/" + LIEN_CAL;
+      versCal.textContent = "ouvrir la page de réservation";
+      alerte.appendChild(versCal);
+
+      alerte.appendChild(document.createTextNode(", ou appeler le "));
+
+      var versTelephone = document.createElement("a");
+      versTelephone.href = "tel:+33" + TELEPHONE.replace(/\D/g, "").slice(1);
+      versTelephone.textContent = TELEPHONE;
+      alerte.appendChild(versTelephone);
+      alerte.appendChild(document.createTextNode("."));
+
       bloc.insertBefore(alerte, bloc.firstChild);
     }
 
@@ -224,5 +240,204 @@
         tout_montrer();
       }
     }, 3000);
+  })();
+
+  /* ── 4. La galerie en perspective ───────────────────────────────────────
+*/
+
+  (function galerie() {
+    var vitre = document.getElementById("galerie-vitre");
+    var liste = document.getElementById("galerie-liste");
+
+    if (!vitre || !liste || sobre.matches || !("ResizeObserver" in window)) {
+      return;
+    }
+
+    // Réglages repris du composant d'origine.
+    var ECART = 40;           // l'espace entre deux photos, en pixels
+    var DOUCEUR = 0.02;       // plus c'est bas, plus le glissement traîne
+    var ASSOMBRIT = 0.85;     // combien les petites photos s'éteignent
+    var ECHELLE_MAX = 2.5;
+    var ECHELLE_MIN = 0.1;
+    var MOLETTE = 1;
+    var GLISSE = 1.5;
+
+    [].slice.call(liste.children).forEach(function (vue) {
+      var copie = vue.cloneNode(true);
+      copie.setAttribute("aria-hidden", "true");
+      liste.appendChild(copie);
+    });
+
+    var vues = [].slice.call(liste.children);
+    var cible = 0;      // là où la bande doit aller
+    var actuel = 0;     // là où elle est vraiment, qui rattrape la cible
+    var largeur = 0;
+    var largeurVue = 0;
+    var pas = 0;
+    var image = 0;      // le numéro d'animation en cours, 0 si arrêtée
+    var dernier = 0;
+
+    function mesurer() {
+      largeur = vitre.clientWidth;
+      largeurVue = vues[0].offsetWidth;
+      pas = largeurVue + ECART;
+    }
+
+    function enroule(valeur, span) {
+      return ((valeur % span) + span) % span;
+    }
+
+    function placer(ecoule) {
+      if (!pas || !largeur) {
+        return;
+      }
+
+      var span = vues.length * pas;
+
+      if (actuel > span || actuel < -span) {
+        var saut = Math.trunc(actuel / span) * span;
+        actuel -= saut;
+        cible -= saut;
+      }
+      
+      actuel += (cible - actuel) * (1 - Math.pow(1 - DOUCEUR, ecoule * 60));
+
+      var marge = (largeur - largeurVue) / 2;
+      var moitie = largeur / 2;
+
+      for (var i = 0; i < vues.length; i += 1) {
+        var brut = i * pas - actuel + marge;
+        var x = enroule(brut + pas, span) - pas;
+        var distance = x + largeurVue / 2 - moitie;
+        var echelle;
+        var pousse;
+
+        if (distance > 0) {
+          echelle = Math.min(ECHELLE_MAX, 1 + distance / largeur);
+          pousse = (echelle - 1) * largeurVue * 0.75;
+        } else {
+          echelle = Math.max(ECHELLE_MIN, 1 + distance / largeur);
+          pousse = 0;
+        }
+
+        vues[i].style.transform =
+          "translate3d(" + (x + pousse) + "px, -50%, 0) scale(" + echelle + ")";
+
+        vues[i].style.filter =
+          echelle < 1
+            ? "brightness(" +
+              (1 - ((1 - echelle) / (1 - ECHELLE_MIN)) * ASSOMBRIT) +
+              ")"
+            : "none";
+      }
+    }
+
+    function battement(maintenant) {
+      image = window.requestAnimationFrame(battement);
+      var ecoule = dernier ? Math.min((maintenant - dernier) / 1000, 0.1) : 1 / 60;
+      dernier = maintenant;
+      placer(ecoule);
+    }
+
+    function demarrer() {
+      if (!image) {
+        dernier = 0;
+        image = window.requestAnimationFrame(battement);
+      }
+    }
+
+    function arreter() {
+      if (image) {
+        window.cancelAnimationFrame(image);
+        image = 0;
+      }
+    }
+
+    
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entrees) {
+        if (entrees[0].isIntersecting) {
+          demarrer();
+        } else {
+          arreter();
+        }
+      }).observe(vitre);
+    } else {
+      demarrer();
+    }
+
+    new ResizeObserver(function () {
+      mesurer();
+      placer(0);
+    }).observe(vitre);
+
+    /* Bascule en mode piloté, puis placement immédiat : sans ce premier
+       calcul, les photos passeraient par une image empilées au même endroit. */
+    vitre.setAttribute("data-slider", "");
+    mesurer();
+    placer(0);
+$
+
+    vitre.addEventListener(
+      "wheel",
+      function (evenement) {
+        if (Math.abs(evenement.deltaX) <= Math.abs(evenement.deltaY)) {
+          return;
+        }
+
+        evenement.preventDefault();
+        cible += evenement.deltaX * MOLETTE;
+      },
+      { passive: false }
+    );
+
+    var doigt = null;
+    var dernierX = 0;
+
+    vitre.addEventListener("pointerdown", function (evenement) {
+      if (doigt !== null) {
+        return;
+      }
+
+      doigt = evenement.pointerId;
+      dernierX = evenement.clientX;
+      vitre.setPointerCapture(doigt);
+    });
+
+    vitre.addEventListener("pointermove", function (evenement) {
+      if (doigt !== evenement.pointerId) {
+        return;
+      }
+
+      cible += (dernierX - evenement.clientX) * GLISSE;
+      dernierX = evenement.clientX;
+    });
+
+    function lacher(evenement) {
+      if (doigt !== evenement.pointerId) {
+        return;
+      }
+
+      if (vitre.hasPointerCapture(doigt)) {
+        vitre.releasePointerCapture(doigt);
+      }
+
+      doigt = null;
+    }
+
+    vitre.addEventListener("pointerup", lacher);
+    vitre.addEventListener("pointercancel", lacher);
+
+    // Au clavier : une photo par appui.
+    vitre.addEventListener("keydown", function (evenement) {
+      var sens = { ArrowRight: 1, ArrowLeft: -1 }[evenement.key];
+
+      if (!sens || evenement.altKey || evenement.ctrlKey || evenement.metaKey) {
+        return;
+      }
+
+      evenement.preventDefault();
+      cible += pas * sens;
+    });
   })();
 })();
