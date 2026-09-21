@@ -181,11 +181,14 @@ Rien de plus que ce que le besoin exige : HTML, CSS et un peu de JavaScript,
 sans framework ni étape de compilation. Un site de cette taille n'a pas de dette
 à amortir, et la cliente doit pouvoir faire reprendre le code par n'importe qui.
 
-Deux polices variables, **Fraunces** pour les titres et **Manrope** pour le
-texte, sous licence libre et **servies depuis le dépôt** : 92 Ko pour une page
-en français. Les charger depuis Google Fonts ferait transiter l'adresse IP de
-chaque visiteuse vers un tiers, ce que le parti pris « aucune donnée
-personnelle » interdit.
+Une seule police, **Merosa**, pour les titres comme pour le texte, **servie
+depuis le dépôt** : 28 Ko en woff2. La charger depuis un hébergeur de polices
+ferait transiter l'adresse IP de chaque visiteuse vers un tiers, ce que le parti
+pris « aucune donnée personnelle » interdit.
+
+Sa licence reste à vérifier auprès de Grezline Studio : le fichier n'en porte
+aucune mention, et un usage *webfont* sur un site commercial ne découle pas
+d'une licence bureau.
 
 L'hébergement se fera sur une plateforme statique (Netlify, Cloudflare Pages ou
 GitHub Pages), en HTTPS, sur son propre nom de domaine.
@@ -197,7 +200,7 @@ index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fic
 style.css     feuille de style
 script.js     agenda Cal.com chargé à l'approche de la section, bandeau, arrivées
 images/       sept cartons d'attente en WebP, à écraser par ses photos
-fonts/        Fraunces et Manrope, servies depuis le dépôt, licences comprises
+fonts/        Merosa, en .otf d'origine et en .woff2 dérivé
 README.md     ce fichier
 ```
 

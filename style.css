@@ -1,3 +1,33 @@
+/* Phoenix Royal — feuille de style unique.
+
+   Noir, blanc, et le rose tenu en réserve : le filet de l'accroche, le bouton,
+   l'anneau de focus. Le caractère vient de la typographie et du rythme.
+
+   Le mouvement répond à un geste, ou ponctue une arrivée, une seule fois. Tout
+   est neutralisé sous `prefers-reduced-motion`. */
+
+/* ── Police ──────────────────────────────────────────────────────────────
+   Merosa est servie depuis ce dépôt, jamais depuis un tiers : une requête vers
+   un hébergeur de polices ferait transiter l'adresse IP de chaque visiteuse
+   vers un serveur étranger, ce que le projet s'interdit.
+
+   Le woff2 est dérivé du .otf fourni ; il pèse 38 % de moins. Le .otf reste en
+   second dans `src` pour les navigateurs qui ne lisent pas le woff2 — il n'en
+   reste guère, mais le fichier est déjà là.
+
+   Une seule graisse, 400 : aucune règle de cette feuille ne doit demander autre
+   chose, sous peine de faux gras synthétique. La hiérarchie se fait à la
+   taille, à l'approche et à la couleur. */
+
+@font-face {
+  font-family: "Merosa";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/Merosa.woff2") format("woff2"),
+       url("fonts/Merosa.otf") format("opentype");
+}
+
 :root {
   color-scheme: light;
 
@@ -34,14 +64,15 @@ body {
   font-size: 1.0625rem;
   font-weight: 400;
   line-height: 1.65;
-  letter-spacing: -0.004em;
+  /* Approche neutre : le resserrement précédent était réglé pour une linéale.
+     Sur un serif de titrage employé en texte courant, il colle les lettres. */
+  letter-spacing: 0;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   font-family: var(--display);
-  font-optical-sizing: auto;
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -124,7 +155,6 @@ button:focus-visible {
   align-items: center;
   gap: 1.25rem;
   font-size: 0.9375rem;
-  font-weight: 500;
 }
 
 .bandeau__nav a {
@@ -171,15 +201,11 @@ button:focus-visible {
 
 .accueil__titre {
   font-size: clamp(3rem, 14vw, 5.5rem);
-  font-weight: 300;
   letter-spacing: -0.035em;
 }
 
 .accueil__promesse {
   font-family: var(--display);
-  /* Fraunces épaissit ses traits quand la taille optique baisse : à 380, la
-     ligne pèse le même poids visuel que le titre en 300. */
-  font-weight: 380;
   font-size: clamp(1.1875rem, 4.5vw, 1.625rem);
   letter-spacing: -0.015em;
   margin-top: 1.25rem;
@@ -206,8 +232,9 @@ button:focus-visible {
   color: var(--papier);
   font: inherit;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0;
+  /* Merosa n'a qu'une graisse : la présence du bouton tient à son fond rose et
+     à son approche, pas à un gras que le navigateur devrait simuler. */
+  letter-spacing: 0.02em;
   text-decoration: none;
   border: 0;
   border-radius: var(--r-pilule);
@@ -241,7 +268,6 @@ button:focus-visible {
 
 .section__titre {
   font-size: clamp(1.875rem, 7vw, 2.75rem);
-  font-weight: 350;
 }
 
 .section__chapo {
@@ -291,7 +317,6 @@ button:focus-visible {
   grid-column: 2;
   grid-row: 1;
   font-size: 1.125rem;
-  font-weight: 450;
   line-height: 1.25;
 }
 
@@ -300,7 +325,6 @@ button:focus-visible {
   grid-row: 1;
   font-family: var(--display);
   font-size: 1.125rem;
-  font-weight: 450;
   line-height: 1.25;
   font-variant-numeric: lining-nums tabular-nums;
   white-space: nowrap;
@@ -330,7 +354,6 @@ button:focus-visible {
 .infos dt {
   font-family: var(--display);
   font-size: 1.0625rem;
-  font-weight: 450;
   padding-top: 1.25rem;
   border-top: 1px solid var(--trait-appuye);
 }
