@@ -1,22 +1,25 @@
-/* Phoenix Royal — feuille de style unique.
-   Noir, blanc, et le rose tenu en réserve : filet du titre, bouton, focus. */
-
 :root {
   color-scheme: light;
 
-  --noir: #000000;
-  --blanc: #ffffff;
-  --gris: #5a5a5a;
-  --trait: #d8d8d8;
+  --encre: #000000;
+  --papier: #ffffff;
+  --gris: #5c5652;          /* gris chaud, 7:1 sur blanc */
+  --trait: rgba(0, 0, 0, 0.1);
+  --trait-appuye: rgba(0, 0, 0, 0.16);
 
-  --rose: #9b1b45;        /* 7,4:1 sur blanc — lisible en texte */
-  --rose-clair: #f6e7ec;  /* aplat de section */
+  --rose: #9b1b45;          /* 7,4:1 sur blanc — lisible en texte */
+  --rose-voile: #fbf2f5;
 
-  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "Merosa", Georgia, "Times New Roman", serif;
+  --texte: "Merosa", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --r-bloc: 18px;
+  --r-media: 12px;
+  --r-pilule: 999px;
 
   --marge: 1.25rem;
   --colonne: 40rem;
+  --vignette: 4.75rem;
 }
 
 *,
@@ -25,30 +28,41 @@
 
 body {
   margin: 0;
-  background: var(--blanc);
-  color: var(--noir);
-  font-family: var(--sans);
+  background: var(--papier);
+  color: var(--encre);
+  font-family: var(--texte);
   font-size: 1.0625rem;
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.004em;
   -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
-  font-family: var(--serif);
+  font-family: var(--display);
+  font-optical-sizing: auto;
   font-weight: 400;
-  line-height: 1.15;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
 p { margin: 0; }
 
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 a { color: var(--rose); }
 
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--rose);
+  outline: 2px solid var(--rose);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* ── Lien d'évitement ────────────────────────────────────────────────── */
@@ -57,15 +71,14 @@ button:focus-visible {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--noir);
-  color: var(--blanc);
+  background: var(--encre);
+  color: var(--papier);
   padding: 0.75rem 1rem;
+  border-radius: 0 0 var(--r-media) 0;
   z-index: 10;
 }
 
-.saut:focus {
-  left: 0;
-}
+.saut:focus { left: 0; }
 
 /* ── Bandeau ─────────────────────────────────────────────────────────── */
 
@@ -78,16 +91,31 @@ button:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem 1rem;
-  padding: 0.75rem var(--marge);
-  background: var(--blanc);
-  border-bottom: 1px solid var(--trait);
+  padding: 0.875rem var(--marge);
+  background: var(--papier);
+  border-bottom: 1px solid transparent;
+}
+
+/* Posé par le script dès que la page a quitté le haut : le voile et le filet
+   disent que le bandeau flotte maintenant au-dessus du contenu. */
+.bandeau--pose {
+  border-bottom-color: var(--trait);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Sans flou disponible, le fond reste opaque : un bandeau translucide sur du
+   texte qui défile serait illisible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bandeau--pose { background: var(--papier); }
 }
 
 .bandeau__nom {
-  font-family: var(--serif);
-  font-size: 1.125rem;
-  letter-spacing: 0.01em;
-  color: var(--noir);
+  font-family: var(--display);
+  font-size: 1.1875rem;
+  letter-spacing: -0.01em;
+  color: var(--encre);
   text-decoration: none;
 }
 
@@ -96,16 +124,17 @@ button:focus-visible {
   align-items: center;
   gap: 1.25rem;
   font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .bandeau__nav a {
-  color: var(--noir);
+  color: var(--encre);
   text-decoration: none;
   padding: 0.5rem 0;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1.5px solid transparent;
 }
 
-.bandeau__nav a:hover { border-bottom-color: var(--noir); }
+.bandeau__nav a:hover { border-bottom-color: var(--encre); }
 
 .bandeau__reserver {
   color: var(--rose);
@@ -114,6 +143,22 @@ button:focus-visible {
 
 .bandeau__reserver:hover { border-bottom-color: var(--rose); }
 
+/* Le bandeau reste collé pendant toute la visite : sur un téléphone, deux
+   lignes lui feraient confisquer un huitième de l'écran. */
+@media (max-width: 26rem) {
+  .bandeau {
+    gap: 0.5rem;
+    padding-inline: 1rem;
+  }
+
+  .bandeau__nom { font-size: 1.0625rem; }
+
+  .bandeau__nav {
+    gap: 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
 /* ── Accueil ─────────────────────────────────────────────────────────── */
 
 /* La gouttière est un padding : la largeur maximale l'inclut, pour que le
@@ -121,57 +166,55 @@ button:focus-visible {
 .accueil {
   max-width: calc(var(--colonne) + var(--marge) * 2);
   margin: 0 auto;
-  padding: 3.5rem var(--marge) 3rem;
+  padding: 4rem var(--marge) 3.5rem;
 }
 
 .accueil__titre {
-  font-size: clamp(2.75rem, 13vw, 5rem);
-  letter-spacing: -0.015em;
+  font-size: clamp(3rem, 14vw, 5.5rem);
+  font-weight: 300;
+  letter-spacing: -0.035em;
 }
 
 .accueil__promesse {
-  font-family: var(--serif);
-  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 2px solid var(--rose);
+  font-family: var(--display);
+  /* Fraunces épaissit ses traits quand la taille optique baisse : à 380, la
+     ligne pèse le même poids visuel que le titre en 300. */
+  font-weight: 380;
+  font-size: clamp(1.1875rem, 4.5vw, 1.625rem);
+  letter-spacing: -0.015em;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--rose);
   display: inline-block;
 }
 
 .accueil__texte {
-  max-width: 34rem;
+  max-width: 32rem;
   margin-top: 1.25rem;
   color: var(--gris);
 }
 
-.accueil__actions { margin-top: 2rem; }
+.accueil__actions { margin-top: 2.25rem; }
 
 /* ── Bouton ──────────────────────────────────────────────────────────── */
 
 .bouton {
   display: inline-block;
-  min-height: 44px;
-  padding: 0.75rem 1.75rem;
+  min-height: 48px;
+  padding: 0.8125rem 1.875rem;
   background: var(--rose);
-  color: var(--blanc);
+  color: var(--papier);
   font: inherit;
   font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
   text-decoration: none;
-  border: 1px solid var(--rose);
-  border-radius: 2px;
+  border: 0;
+  border-radius: var(--r-pilule);
   cursor: pointer;
 }
 
-.bouton:hover {
-  background: var(--noir);
-  border-color: var(--noir);
-}
-
-.bouton[disabled] {
-  background: var(--gris);
-  border-color: var(--gris);
-  cursor: default;
-}
+.bouton:hover { background: var(--encre); }
 
 /* ── Sections ────────────────────────────────────────────────────────── */
 
@@ -182,12 +225,10 @@ button:focus-visible {
   scroll-margin-top: 4.5rem;
 }
 
-.section {
-  padding: 3rem var(--marge);
-}
+.section { padding: 3.5rem var(--marge); }
 
 .section--pale {
-  background: var(--rose-clair);
+  background: var(--rose-voile);
 }
 
 /* La colonne est tenue par ce conteneur, et par lui seul : la porter sur
@@ -199,110 +240,162 @@ button:focus-visible {
 }
 
 .section__titre {
-  font-size: clamp(1.75rem, 7vw, 2.5rem);
+  font-size: clamp(1.875rem, 7vw, 2.75rem);
+  font-weight: 350;
 }
 
 .section__chapo {
   margin: 1rem 0 0;
   color: var(--gris);
-  max-width: 34rem;
+  max-width: 32rem;
 }
 
 /* ── La carte des prestations ────────────────────────────────────────── */
 
+/* Une ligne par prestation : la vignette à gauche, le nom et le prix sur la
+   même ligne de lecture, la description dessous. Le pouce parcourt la liste
+   d'un seul geste vertical — celui qu'il fait déjà pour lire la page. */
 .carte {
   list-style: none;
-  margin: 2.5rem 0 0;
+  margin: 2.25rem 0 0;
   padding: 0;
 }
 
 .presta {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  column-gap: 0.75rem;
+  grid-template-columns: var(--vignette) 1fr auto;
+  /* La vignette s'étend sur les deux rangées et les dépasse en hauteur. Sans
+     `1fr` sur la seconde, le surplus se répartirait entre les deux et
+     creuserait un vide entre le nom et sa description. */
+  grid-template-rows: auto 1fr;
+  column-gap: 1.125rem;
+  align-items: start;
   padding: 1.25rem 0;
   border-top: 1px solid var(--trait);
 }
 
 .presta:last-child { border-bottom: 1px solid var(--trait); }
 
-.presta__nom {
-  font-size: 1.25rem;
+.presta__photo {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: var(--vignette);
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--r-media);
+  background: var(--rose-voile);
 }
 
-.presta__points { display: none; }
+.presta__nom {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 1.125rem;
+  font-weight: 450;
+  line-height: 1.25;
+}
 
 .presta__prix {
-  font-family: var(--serif);
-  font-size: 1.25rem;
+  grid-column: 3;
+  grid-row: 1;
+  font-family: var(--display);
+  font-size: 1.125rem;
+  font-weight: 450;
+  line-height: 1.25;
+  font-variant-numeric: lining-nums tabular-nums;
   white-space: nowrap;
 }
 
 .presta__detail {
-  grid-column: 1 / -1;
-  margin-top: 0.375rem;
+  grid-column: 2 / -1;
+  grid-row: 2;
+  margin-top: 0.4375rem;
   font-size: 0.9375rem;
   color: var(--gris);
-  max-width: 32rem;
 }
 
-/* Les points de conduite d'une carte de salon : seulement quand il y a
-   la place de les tracer sur une seule ligne. */
 @media (min-width: 30rem) {
-  .presta {
-    grid-template-columns: auto 1fr auto;
-  }
+  :root { --vignette: 6.25rem; }
 
-  .presta__points {
-    display: block;
-    align-self: center;
-    border-bottom: 1px dotted var(--trait);
-    transform: translateY(-0.2em);
-  }
+  .presta { padding: 1.5rem 0; }
+
+  .presta__nom,
+  .presta__prix { font-size: 1.1875rem; }
 }
 
 /* ── Informations pratiques ──────────────────────────────────────────── */
 
-.infos {
-  margin: 2.5rem 0 0;
-}
+.infos { margin: 2.25rem 0 0; }
 
 .infos dt {
-  font-family: var(--serif);
-  font-size: 1.125rem;
+  font-family: var(--display);
+  font-size: 1.0625rem;
+  font-weight: 450;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1px solid var(--trait-appuye);
 }
 
 .infos dd {
   margin: 0.25rem 0 1.25rem;
-  color: #3d3d3d;
-  max-width: 34rem;
+  color: #3a3532;
+  max-width: 32rem;
 }
 
 .infos a { color: var(--rose); }
 
+/* Au-delà de cette largeur, l'intitulé se range en colonne à gauche : la
+   lecture devient un tableau, qui se parcourt du regard. */
+@media (min-width: 46rem) {
+  .infos {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    column-gap: 2rem;
+  }
+
+  .infos dt {
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .infos dd {
+    grid-column: 2;
+    margin: 0;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-top: 1px solid var(--trait-appuye);
+  }
+
+  .infos dt { padding-bottom: 1.25rem; }
+}
+
 /* ── Agenda ──────────────────────────────────────────────────────────── */
 
-.agenda { margin-top: 2.5rem; }
-
-.agenda__accueil {
-  padding: 2rem 1.5rem;
-  border: 1px solid var(--trait);
-  border-radius: 2px;
-}
+/* L'agenda apporte sa propre marge intérieure : 2,5 rem comme ailleurs
+   creuseraient un vide sous le chapô. */
+.agenda { margin-top: 1.25rem; }
 
 .agenda__mention {
-  margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--gris);
+  max-width: 32rem;
 }
 
-.agenda__cible {
+/* Sans JavaScript, le conteneur reste vide : il ne doit alors réserver aucune
+   place. La hauteur n'apparaît qu'avec l'attribut posé par le script. */
+.agenda__cible[data-etat] {
   min-height: 34rem;
   overflow: auto;
 }
+
+.agenda__cible[data-etat="attente"]::before {
+  content: "Chargement de l'agenda…";
+  display: block;
+  padding: 2.5rem 0;
+  color: var(--gris);
+  font-size: 0.9375rem;
+}
+
+.agenda__noscript { margin: 1.5rem 0; }
 
 .agenda__repli {
   margin-top: 1.5rem;
@@ -311,18 +404,19 @@ button:focus-visible {
 }
 
 .agenda__erreur {
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.125rem 1.25rem;
   border-left: 3px solid var(--rose);
-  background: var(--rose-clair);
-  color: var(--noir);
+  border-radius: 0 var(--r-media) var(--r-media) 0;
+  background: var(--rose-voile);
+  color: var(--encre);
   font-size: 0.9375rem;
 }
 
 /* ── Pied de page ────────────────────────────────────────────────────── */
 
 .pied {
-  padding: 2.5rem var(--marge) 3rem;
+  padding: 3rem var(--marge);
   border-top: 1px solid var(--trait);
   font-size: 0.875rem;
   color: var(--gris);
@@ -330,15 +424,66 @@ button:focus-visible {
 
 .pied__ligne {
   margin: 0 0 0.5rem;
-  max-width: 34rem;
+  max-width: 32rem;
 }
 
-/* ── Confort de lecture ──────────────────────────────────────────────── */
+/* ── Mouvement ───────────────────────────────────────────────────────────
+   Tout ce qui suit est facultatif par construction : l'état par défaut de la
+   page, ci-dessus, est l'état visible et utilisable. Rien ici ne conditionne
+   la lecture du contenu — ni sans script, ni sans animation. */
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@media (prefers-reduced-motion: no-preference) {
+
+  /* Une seule arrivée orchestrée sur la page : celle de l'accueil. */
+  .accueil__titre,
+  .accueil__promesse,
+  .accueil__texte,
+  .accueil__actions {
+    animation: monter 680ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
   }
+
+  .accueil__promesse { animation-delay: 90ms; }
+  .accueil__texte    { animation-delay: 180ms; }
+  .accueil__actions  { animation-delay: 270ms; }
+
+  @keyframes monter {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Le filet de l'accroche se trace au lieu d'apparaître. */
+  .accueil__promesse {
+    animation-name: monter, tracer;
+    animation-duration: 680ms, 700ms;
+    animation-delay: 90ms, 420ms;
+    animation-fill-mode: backwards, backwards;
+  }
+
+  @keyframes tracer {
+    from { border-top-color: transparent; }
+    to   { border-top-color: var(--rose); }
+  }
+
+  .bandeau {
+    transition: border-bottom-color 200ms ease, background-color 200ms ease;
+  }
+
+  .bouton { transition: background-color 180ms ease; }
+
+  .bandeau__nav a { transition: border-bottom-color 160ms ease; }
+
+  /* Chaque ligne arrive une fois, à son entrée dans le champ. Le script pose
+     `data-anime` : sans lui, ce bloc ne s'applique jamais. */
+  .carte[data-anime] .presta {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 450ms ease, transform 450ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .carte[data-anime] .presta.est-entree {
+    opacity: 1;
+    transform: none;
+  }
+
+  .agenda__cible[data-etat="pret"] { animation: monter 420ms ease backwards; }
 }

@@ -32,10 +32,22 @@ La page est écrite et branchée sur l'agenda Cal.com
 (`cal.com/phoenixroyal78`) : accroche, carte des prestations, informations
 pratiques, réservation. La structure et le style sont en place.
 
+Les prestations se présentent en liste verticale : une ligne par prestation,
+vignette à gauche, nom et tarif sur la même ligne de lecture, description
+dessous. Le pouce les parcourt d'un seul geste, celui qu'il fait déjà pour lire
+la page.
+
 **Le contenu, lui, est un jeu d'exemple.** Les sept prestations, leurs durées,
 leurs tarifs, le secteur, les horaires, le téléphone et le SIREN sont des
 valeurs de démonstration, signalées par un encadré en tête d'`index.html`. Elles
 doivent être remplacées par les vraies avant toute mise en ligne.
+
+Les sept fichiers d'`images/` ne sont pas des photos : ce sont des cartons
+barrés d'une croix, portant le nom de la prestation et la mention « photo à
+remplacer ». La croix est là pour qu'aucun ne passe pour une photo à la taille
+où il s'affiche, environ 76 px, où le texte n'est plus lisible. Les remplacer
+revient à écraser chaque fichier par la vraie photo, en WebP, au même nom,
+cadrée en 4:5 et d'au moins 400 × 500 px — et à réécrire l'attribut `alt`.
 
 ## Prise de rendez-vous : l'arbitrage
 
@@ -137,9 +149,16 @@ de ses clientes. Quatre points suffisent à le tenir :
 de base, pas de serveur à sécuriser. Cela ne vaut pas exemption : c'est le site
 qui provoque la collecte en embarquant le module, ce qui rend l'éditrice
 responsable conjointe du traitement avec le prestataire. Les mentions légales et
-la politique de confidentialité doivent le nommer, et les cookies que son module
-dépose relèvent du consentement préalable s'ils ne sont pas strictement
-nécessaires.
+la politique de confidentialité doivent le nommer.
+
+L'agenda s'affiche sans qu'on ait à le demander, et cela repose sur un relevé :
+Cal.com pose trois cookies, tous sur son propre domaine — `__cf_bm` (anti-robot
+Cloudflare, 30 minutes), `__Secure-next-auth.csrf-token` et
+`__Secure-next-auth.callback-url`, ces deux-là de session. Aucun traceur, rien
+dans le stockage local du site. Strictement nécessaires, donc hors du champ du
+consentement préalable : pas de bannière à poser. **Ce relevé est à refaire
+avant la mise en ligne et à chaque montée de version du module** ; s'il change,
+c'est le chargement automatique qu'il faut remettre derrière un geste.
 
 ### À confirmer avec la cliente
 
@@ -162,6 +181,12 @@ Rien de plus que ce que le besoin exige : HTML, CSS et un peu de JavaScript,
 sans framework ni étape de compilation. Un site de cette taille n'a pas de dette
 à amortir, et la cliente doit pouvoir faire reprendre le code par n'importe qui.
 
+Deux polices variables, **Fraunces** pour les titres et **Manrope** pour le
+texte, sous licence libre et **servies depuis le dépôt** : 92 Ko pour une page
+en français. Les charger depuis Google Fonts ferait transiter l'adresse IP de
+chaque visiteuse vers un tiers, ce que le parti pris « aucune donnée
+personnelle » interdit.
+
 L'hébergement se fera sur une plateforme statique (Netlify, Cloudflare Pages ou
 GitHub Pages), en HTTPS, sur son propre nom de domaine.
 
@@ -170,7 +195,9 @@ GitHub Pages), en HTTPS, sur son propre nom de domaine.
 ```
 index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fichier
 style.css     feuille de style
-script.js     chargement de l'agenda Cal.com à la demande
+script.js     agenda Cal.com chargé à l'approche de la section, bandeau, arrivées
+images/       sept cartons d'attente en WebP, à écraser par ses photos
+fonts/        Fraunces et Manrope, servies depuis le dépôt, licences comprises
 README.md     ce fichier
 ```
 

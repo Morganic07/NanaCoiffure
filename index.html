@@ -3,37 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Phoenix Royal — coiffure à domicile</title>
+<title>Nana Coiffure</title>
 <meta name="description" content="Coiffure à domicile dans les Yvelines. Coupe, couleur, balayage et coiffure d'événement. Prise de rendez-vous en ligne.">
+<link rel="preload" href="fonts/Merosa.otf" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!--
-  ╔══════════════════════════════════════════════════════════════════════╗
-  ║  À REMPLACER AVANT MISE EN LIGNE — valeurs d'exemple, pas des vraies ║
-  ║  · les sept prestations, leurs durées et leurs tarifs                ║
-  ║  · le secteur de déplacement et les horaires                         ║
-  ║  · le numéro de téléphone (06 00 00 00 00 est un faux)               ║
-  ║  · le SIREN dans le pied de page                                     ║
-  ╚══════════════════════════════════════════════════════════════════════╝
--->
+<header class="bandeau" id="bandeau">
+  <a class="bandeau__nom" href="#contenu">Logo</a>
 
-<a class="saut" href="#contenu">Aller au contenu</a>
-
-<header class="bandeau">
-  <a class="bandeau__nom" href="#contenu">Phoenix&nbsp;Royal</a>
-  <nav class="bandeau__nav" aria-label="Navigation principale">
-    <a href="#carte">Prestations</a>
-    <a href="#infos">Infos</a>
-    <a href="#reserver" class="bandeau__reserver">Réserver</a>
-  </nav>
 </header>
 
 <main id="contenu">
 
   <section class="accueil">
-    <h1 class="accueil__titre">Phoenix&nbsp;Royal</h1>
+    <h1 class="accueil__titre">Nana Coiffure</h1>
     <p class="accueil__promesse">Coiffure à domicile, dans les Yvelines.</p>
     <p class="accueil__texte">
       Vous choisissez le créneau, je viens chez vous avec tout le matériel.
@@ -47,51 +33,59 @@
   <section id="carte" class="section" aria-labelledby="titre-carte">
     <div class="colonne">
       <h2 id="titre-carte" class="section__titre">La carte</h2>
+
       <p class="section__chapo">
         Les tarifs comprennent le déplacement. Un devis est fait sur place avant
         toute couleur, parce qu'une longueur change le temps et la quantité.
       </p>
 
-      <ul class="carte">
+      <ul class="carte" id="carte-liste">
         <li class="presta">
+          <img class="presta__photo" src="images/coupe-femme.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Coupe femme">
           <h3 class="presta__nom">Coupe femme</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">35&nbsp;€</p>
           <p class="presta__detail">Shampooing, coupe et coiffage. Compter 45 minutes.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/brushing.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Brushing">
           <h3 class="presta__nom">Brushing</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">25&nbsp;€</p>
           <p class="presta__detail">Seul ou après une coupe. Compter 30 minutes.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/coupe-homme.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Coupe homme">
           <h3 class="presta__nom">Coupe homme</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">20&nbsp;€</p>
           <p class="presta__detail">Tondeuse ou ciseaux, contours nets. Compter 30 minutes.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/coupe-enfant.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Coupe enfant">
           <h3 class="presta__nom">Coupe enfant</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">18&nbsp;€</p>
           <p class="presta__detail">Jusqu'à 12 ans. Compter 30 minutes.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/couleur-racines.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Couleur racines">
           <h3 class="presta__nom">Couleur racines</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">55&nbsp;€</p>
           <p class="presta__detail">Pose, temps de pause et coiffage. Compter 1 h 30.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/balayage.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Balayage">
           <h3 class="presta__nom">Balayage</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">85&nbsp;€</p>
           <p class="presta__detail">Éclaircissement mèche à mèche, patine comprise. Compter 2 h 30.</p>
         </li>
         <li class="presta">
+          <img class="presta__photo" src="images/coiffure-evenement.webp" width="400" height="500"
+               loading="lazy" decoding="async" alt="Coiffure d'événement">
           <h3 class="presta__nom">Coiffure d'événement</h3>
-          <span class="presta__points" aria-hidden="true"></span>
           <p class="presta__prix">60&nbsp;€</p>
           <p class="presta__detail">Mariage, cérémonie. Essai possible en amont. Compter 1 heure.</p>
         </li>
@@ -132,15 +126,24 @@
         par courriel, et le rendez-vous se pose directement dans mon agenda.
       </p>
 
-      <div class="agenda">
-        <div class="agenda__accueil" id="agenda-accueil">
-          <button class="bouton" type="button" id="agenda-bouton">Voir les créneaux</button>
-          <p class="agenda__mention">
-            L'agenda est fourni par Cal.com et ne se charge qu'à cette demande.
-          </p>
-        </div>
+      <div class="agenda" id="agenda">
+        <!-- L'information doit précéder la collecte : cette ligne dit d'où
+             vient le module avant qu'il ne s'affiche, et elle ne dépend pas du
+             script. -->
+        <p class="agenda__mention">
+          L'agenda est fourni par Cal.com. L'afficher contacte leur service, qui
+          recueille le nom et les coordonnées laissés à la réservation.
+        </p>
 
-        <div id="agenda-cible" class="agenda__cible" hidden></div>
+        <!-- L'agenda s'installe ici tout seul. Le conteneur reste vide sans
+             JavaScript : c'est le bloc <noscript> qui prend alors le relais. -->
+        <div id="agenda-cible" class="agenda__cible"></div>
+
+        <noscript>
+          <p class="agenda__noscript">
+            <a class="bouton" href="https://cal.com/phoenixroyal78">Ouvrir la page de réservation</a>
+          </p>
+        </noscript>
 
         <p class="agenda__repli">
           Vous pouvez aussi
