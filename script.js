@@ -1,9 +1,3 @@
-/* Comportements de la page. Trois morceaux indépendants : chacun vérifie ce
-   dont il a besoin et s'abstient si l'élément manque.
-
-   Principe commun : sans ce fichier, la page reste lisible et utilisable. Le
-   script ajoute du confort — l'agenda intégré, le filet du bandeau, l'arrivée
-   des lignes — jamais une condition d'accès au contenu. */
 
 (function () {
   "use strict";
@@ -35,9 +29,6 @@
       return;
     }
 
-    /* embed.js n'installe pas `window.Cal` : il exige de le trouver déjà en
-       place, sous forme de file d'attente, et lève une exception sinon. Les
-       appels empilés ici sont rejoués par le script une fois chargé. */
     function amorcer() {
       if (window.Cal) {
         return;
@@ -67,13 +58,12 @@
 
       cal.ns = {};
       cal.q = [];
-      cal.loaded = true; // empêche embed.js de réinjecter son propre script
+      cal.loaded = true; 
       window.Cal = cal;
     }
 
     function echouer() {
-      // Le conteneur redevient ce qu'il était : rien. Mieux vaut pas de cadre
-      // qu'un cadre vide de 34 rem.
+      
       cible.removeAttribute("data-etat");
       cible.textContent = "";
 
@@ -91,8 +81,7 @@
     function charger() {
       amorcer();
 
-      // La cible doit avoir sa hauteur avant l'empilement : l'agenda la
-      // mesure au moment où il s'insère.
+      
       cible.setAttribute("data-etat", "attente");
 
       window.Cal("init", { origin: "https://cal.com" });
@@ -117,11 +106,6 @@
           return;
         }
 
-        /* Arrivé mais sans rien rendre : le repli vaut mieux qu'un cadre vide.
-           Le minuteur n'est armé que si le module n'a encore rien posé, et il
-           reconnaît les deux formes possibles — l'élément `cal-inline` comme
-           l'iframe. Chercher la seule iframe effacerait un agenda qui marche le
-           jour où Cal.com la placerait dans un shadow root. */
         window.setTimeout(function () {
           if (!cible.querySelector("cal-inline, iframe")) {
             echouer();
@@ -136,17 +120,7 @@
 
       document.head.appendChild(script);
     }
-
-    /* Le chargement part au premier signe qu'on se dirige vers la réservation,
-       pas à l'ouverture de la page : l'agenda tire près de quatre-vingts
-       requêtes, qui n'ont pas à concurrencer l'affichage de l'accroche et des
-       tarifs.
-
-       Deux signes, parce qu'il y a deux chemins. Celui qui fait défiler arrive
-       par l'observateur, avec 600 px d'avance. Celui qui clique « Prendre
-       rendez-vous » ou « Réserver » saute d'un coup : l'observateur ne se
-       déclencherait qu'une fois arrivé, sans une milliseconde d'avance. Le clic
-       sur le lien d'ancre amorce donc le chargement lui-même. */
+    
     var demarre = false;
 
     function demarrer() {
@@ -190,7 +164,6 @@
     guetteur.observe(bloc);
   })();
 
-  /* ── 2. Le bandeau prend un filet dès qu'il flotte ──────────────────── */
 
   (function bandeau() {
     var barre = document.getElementById("bandeau");
@@ -220,7 +193,6 @@
     relever();
   })();
 
-  /* ── 3. L'arrivée des lignes, une fois ──────────────────────────────── */
 
   (function arrivees() {
     var liste = document.getElementById("carte-liste");
@@ -237,8 +209,7 @@
       });
     }
 
-    // `data-anime` conditionne le masquage initial côté CSS : il n'est posé
-    // qu'ici, et seulement une fois l'observateur en place.
+    
     liste.setAttribute("data-anime", "");
 
     var observateur = new IntersectionObserver(
@@ -256,9 +227,7 @@
     cartes.forEach(function (c) {
       observateur.observe(c);
     });
-
-    // Filet de sécurité : si rien n'est apparu au bout de trois secondes,
-    // on montre tout. Une prestation invisible est un contenu perdu.
+    
     window.setTimeout(function () {
       if (!liste.querySelector(".presta.est-entree")) {
         observateur.disconnect();
