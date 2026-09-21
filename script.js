@@ -4,16 +4,6 @@
 
   var sobre = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  /* ── 1. L'agenda Cal.com, installé tout seul ────────────────────────────
-     Il n'y a rien à cliquer : l'agenda s'installe à l'approche de la section
-     Réserver, pour ne pas faire payer ses soixante-dix requêtes à l'ouverture
-     de la page. Si le service ne répond pas, le lien direct reste affiché et
-     un message le dit — l'échec ne doit jamais être silencieux.
-
-     Les trois cookies posés par Cal.com (anti-bot Cloudflare, jeton anti-CSRF,
-     URL de rappel) sont strictement nécessaires : ils n'appellent pas de
-     consentement préalable. Si ce constat cesse d'être vrai, c'est ce
-     chargement automatique qu'il faut remettre derrière un geste. */
 
   (function agenda() {
     var LIEN_CAL = "phoenixroyal78";
