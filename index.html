@@ -6,6 +6,7 @@
 <title>Nana Coiffure</title>
 <meta name="description" content="Coiffure à domicile dans les Yvelines. Coupe, couleur, balayage et coiffure d'événement. Prise de rendez-vous en ligne.">
 <link rel="preload" href="fonts/Merosa.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,8 +20,7 @@
 
   <section class="accueil">
     <h1 class="accueil__titre">Nana Coiffure</h1>
-    <p class="accueil__promesse">Coiffure à domicile, dans les Yvelines.</p>
-    <p class="accueil__texte">
+    <p class="accueil__promesse">
       Vous choisissez le créneau, je viens chez vous avec tout le matériel.
       Pas de salle d'attente, pas d'heure de retard.
     </p>
@@ -31,7 +31,7 @@
 
   <section id="carte" class="section" aria-labelledby="titre-carte">
     <div class="colonne">
-      <h2 id="titre-carte" class="section__titre">La carte</h2>
+      <h2 id="titre-carte" class="section__titre">Prestations</h2>
 
       <p class="section__chapo">
         Les tarifs comprennent le déplacement. Un devis est fait sur place avant
@@ -120,30 +120,21 @@
   <section id="reserver" class="section" aria-labelledby="titre-reserver">
     <div class="colonne">
       <h2 id="titre-reserver" class="section__titre">Réserver</h2>
-      <p class="section__chapo">
-        Choisissez la prestation puis le créneau. Vous recevez la confirmation
-        par courriel, et le rendez-vous se pose directement dans mon agenda.
-      </p>
+
 
       <div class="agenda" id="agenda">
-        <!-- L'information doit précéder la collecte : cette ligne dit d'où
-             vient le module avant qu'il ne s'affiche, et elle ne dépend pas du
-             script. -->
-        <p class="agenda__mention">
-          L'agenda est fourni par Cal.com. L'afficher contacte leur service, qui
-          recueille le nom et les coordonnées laissés à la réservation.
-        </p>
-
-        <!-- L'agenda s'installe ici tout seul. Le conteneur reste vide sans
-             JavaScript : c'est le bloc <noscript> qui prend alors le relais. -->
+        <!-- L'agenda s'installe ici tout seul, à l'approche de la section. -->
         <div id="agenda-cible" class="agenda__cible"></div>
 
+        <!-- Sans JavaScript, rien ne s'installe : ce bloc prend le relais. -->
         <noscript>
           <p class="agenda__noscript">
             <a class="bouton" href="https://cal.com/phoenixroyal78">Ouvrir la page de réservation</a>
           </p>
         </noscript>
 
+        <!-- Toujours affiché : c'est aussi ce que désigne le message d'erreur
+             de script.js quand l'agenda ne se charge pas. -->
         <p class="agenda__repli">
           Vous pouvez aussi
           <a href="https://cal.com/phoenixroyal78">ouvrir la page de réservation</a>

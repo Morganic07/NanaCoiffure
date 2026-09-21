@@ -1,23 +1,37 @@
-/* Phoenix Royal — feuille de style unique.
+/* ============================================================
+   Nana Coiffure — feuille de style unique
 
-   Noir, blanc, et le rose tenu en réserve : le filet de l'accroche, le bouton,
-   l'anneau de focus. Le caractère vient de la typographie et du rythme.
+   Plan du fichier, dans l'ordre :
+     1. Polices          les fichiers à charger
+     2. Réglages         les valeurs réutilisées partout (couleurs, tailles)
+     3. Base             ce qui s'applique à toute la page
+     4. Bandeau          la barre du haut, qui reste collée
+     5. Accueil          le grand titre et le bouton
+     6. Sections         le cadre commun aux trois blocs de contenu
+     7. Prestations      la liste des tarifs
+     8. Informations     la liste « Comment ça se passe »
+     9. Agenda           le module de réservation
+    10. Pied de page
+    11. Animations       tout ce qui bouge, et rien d'essentiel
 
-   Le mouvement répond à un geste, ou ponctue une arrivée, une seule fois. Tout
-   est neutralisé sous `prefers-reduced-motion`. */
+   Deux règles tenues d'un bout à l'autre :
+   — toute couleur, et toute taille réutilisée à plusieurs endroits, est
+     déclarée en variable dans la partie 2 : un seul endroit à changer.
+     Les mesures qui ne servent qu'une fois restent sur place, là où on
+     les cherche ;
+   — la page doit rester lisible sans JavaScript et sans animation.
+   ============================================================ */
 
-/* ── Police ──────────────────────────────────────────────────────────────
-   Merosa est servie depuis ce dépôt, jamais depuis un tiers : une requête vers
-   un hébergeur de polices ferait transiter l'adresse IP de chaque visiteuse
-   vers un serveur étranger, ce que le projet s'interdit.
 
-   Le woff2 est dérivé du .otf fourni ; il pèse 38 % de moins. Le .otf reste en
-   second dans `src` pour les navigateurs qui ne lisent pas le woff2 — il n'en
-   reste guère, mais le fichier est déjà là.
+/* === 1. Polices ============================================
+   Les fichiers sont dans ce dépôt, jamais chez un tiers : une police
+   chargée depuis un serveur extérieur lui transmettrait l'adresse IP de
+   chaque visiteuse.
 
-   Une seule graisse, 400 : aucune règle de cette feuille ne doit demander autre
-   chose, sous peine de faux gras synthétique. La hiérarchie se fait à la
-   taille, à l'approche et à la couleur. */
+   Merosa habille les titres, Montserrat le texte courant.
+   Attention : Merosa n'existe qu'en une seule graisse (400). Lui demander
+   du gras ferait épaissir les lettres par le navigateur, ce qui les
+   déforme. Montserrat, elle, va de 100 à 900 pour de vrai.           */
 
 @font-face {
   font-family: "Merosa";
@@ -28,33 +42,75 @@
        url("fonts/Merosa.otf") format("opentype");
 }
 
+/* Montserrat est coupée en deux fichiers. `unicode-range` dit au
+   navigateur lequel télécharger : le second ne part que si la page
+   contient une lettre rare, « œ » par exemple. */
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/montserrat-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+/* === 2. Réglages ===========================================
+   Toutes les valeurs réutilisées du site vivent ici. Changer le rose du
+   site, c'est changer cette ligne-là et aucune autre.                 */
+
 :root {
   color-scheme: light;
 
-  --encre: #000000;
-  --papier: #ffffff;
-  --gris: #5c5652;          /* gris chaud, 7:1 sur blanc */
-  --trait: rgba(0, 0, 0, 0.1);
-  --trait-appuye: rgba(0, 0, 0, 0.16);
+  /* Couleurs */
+  --encre: #000000;              /* le texte */
+  --papier: #ffffff;             /* le fond */
+  --papier-voile: rgba(255, 255, 255, 0.82);  /* fond du bandeau qui flotte */
+  --gris: #5c5652;               /* texte secondaire, 7:1 sur blanc */
+  --rose: #9b1b45;               /* liens et bouton, 7,4:1 sur blanc */
+  --rose-voile: #fbf2f5;         /* fond de section et de vignette */
+  --trait: rgba(0, 0, 0, 0.1);         /* filets de séparation */
+  --trait-appuye: rgba(0, 0, 0, 0.16); /* filets un peu plus visibles */
 
-  --rose: #9b1b45;          /* 7,4:1 sur blanc — lisible en texte */
-  --rose-voile: #fbf2f5;
-
+  /* Polices : `--display` pour les titres, `--texte` pour le reste.
+     Un élément qui prend `--display` garde la graisse 400. */
   --display: "Merosa", Georgia, "Times New Roman", serif;
-  --texte: "Merosa", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --texte: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
-  --r-bloc: 18px;
-  --r-media: 12px;
-  --r-pilule: 999px;
+  /* Arrondis */
+  --r-media: 12px;               /* images et encadrés */
+  --r-pilule: 999px;             /* le bouton, arrondi au maximum */
 
-  --marge: 1.25rem;
-  --colonne: 40rem;
-  --vignette: 4.75rem;
+  /* Tailles de mise en page */
+  --marge: 1.25rem;              /* espace laissé sur les bords de l'écran */
+  --colonne: 40rem;              /* largeur maximale du contenu */
+  --mesure: 32rem;               /* largeur maximale d'un paragraphe */
+  --vignette: 4.75rem;           /* côté des petites photos de la liste */
 }
 
+
+/* === 3. Base ===============================================         */
+
+/* Les tailles incluent bordures et espacements intérieurs : c'est plus
+   simple à calculer de tête. */
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -62,33 +118,38 @@ body {
   color: var(--encre);
   font-family: var(--texte);
   font-size: 1.0625rem;
-  font-weight: 400;
   line-height: 1.65;
-  /* Approche neutre : le resserrement précédent était réglé pour une linéale.
-     Sur un serif de titrage employé en texte courant, il colle les lettres. */
-  letter-spacing: 0;
+  letter-spacing: -0.006em;  /* Montserrat est large : on resserre un peu */
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Les titres du navigateur sont gras et entourés de marges : on remet
+   tout à plat une bonne fois. */
 h1, h2, h3 {
+  margin: 0;
   font-family: var(--display);
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.02em;
+}
+
+p {
   margin: 0;
 }
 
-p { margin: 0; }
-
 img {
+  display: block;
   max-width: 100%;
   height: auto;
-  display: block;
 }
 
-a { color: var(--rose); }
+a {
+  color: var(--rose);
+}
 
+/* Le contour au clavier : indispensable pour savoir où l'on se trouve
+   en naviguant à la touche Tab. Ne jamais le supprimer. */
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--rose);
@@ -96,25 +157,11 @@ button:focus-visible {
   border-radius: 4px;
 }
 
-/* ── Lien d'évitement ────────────────────────────────────────────────── */
 
-.saut {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  background: var(--encre);
-  color: var(--papier);
-  padding: 0.75rem 1rem;
-  border-radius: 0 0 var(--r-media) 0;
-  z-index: 10;
-}
-
-.saut:focus { left: 0; }
-
-/* ── Bandeau ─────────────────────────────────────────────────────────── */
+/* === 4. Bandeau ============================================         */
 
 .bandeau {
-  position: sticky;
+  position: sticky;   /* reste en haut quand la page défile */
   top: 0;
   z-index: 5;
   display: flex;
@@ -127,19 +174,22 @@ button:focus-visible {
   border-bottom: 1px solid transparent;
 }
 
-/* Posé par le script dès que la page a quitté le haut : le voile et le filet
-   disent que le bandeau flotte maintenant au-dessus du contenu. */
+/* Cette classe est ajoutée par script.js dès que la page a quitté le
+   haut. Le filet et le voile disent que le bandeau flotte au-dessus du
+   contenu au lieu d'être posé dessus. */
 .bandeau--pose {
+  background: var(--papier-voile);
   border-bottom-color: var(--trait);
-  background: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
 
-/* Sans flou disponible, le fond reste opaque : un bandeau translucide sur du
-   texte qui défile serait illisible. */
+/* Si le navigateur ne sait pas flouter, on repasse en fond opaque :
+   sinon le texte qui défile derrière rendrait le bandeau illisible. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .bandeau--pose { background: var(--papier); }
+  .bandeau--pose {
+    background: var(--papier);
+  }
 }
 
 .bandeau__nom {
@@ -150,117 +200,107 @@ button:focus-visible {
   text-decoration: none;
 }
 
-.bandeau__nav {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  font-size: 0.9375rem;
-}
-
-.bandeau__nav a {
-  color: var(--encre);
-  text-decoration: none;
-  padding: 0.5rem 0;
-  border-bottom: 1.5px solid transparent;
-}
-
-.bandeau__nav a:hover { border-bottom-color: var(--encre); }
-
-.bandeau__reserver {
-  color: var(--rose);
-  border-bottom-color: var(--rose);
-}
-
-.bandeau__reserver:hover { border-bottom-color: var(--rose); }
-
-/* Le bandeau reste collé pendant toute la visite : sur un téléphone, deux
-   lignes lui feraient confisquer un huitième de l'écran. */
+/* Sur un petit téléphone, le bandeau est collé pendant toute la visite :
+   on le garde sur une seule ligne pour qu'il ne mange pas l'écran. */
 @media (max-width: 26rem) {
   .bandeau {
     gap: 0.5rem;
     padding-inline: 1rem;
   }
 
-  .bandeau__nom { font-size: 1.0625rem; }
-
-  .bandeau__nav {
-    gap: 0.875rem;
-    font-size: 0.875rem;
+  .bandeau__nom {
+    font-size: 1.0625rem;
   }
 }
 
-/* ── Accueil ─────────────────────────────────────────────────────────── */
 
-/* La gouttière est un padding : la largeur maximale l'inclut, pour que le
-   texte de l'accueil tombe sur la même verticale que celui des sections. */
+/* === 5. Accueil ============================================         */
+
+/* L'espace sur les bords est un `padding`, et la largeur maximale le
+   comprend : le texte tombe ainsi sur la même verticale que celui des
+   sections, qui sont construites pareil. */
 .accueil {
   max-width: calc(var(--colonne) + var(--marge) * 2);
   margin: 0 auto;
   padding: 4rem var(--marge) 3.5rem;
 }
 
+/* `clamp` = taille minimale, taille idéale, taille maximale. Le titre
+   grandit avec l'écran sans jamais déborder. */
 .accueil__titre {
   font-size: clamp(3rem, 14vw, 5.5rem);
   letter-spacing: -0.035em;
 }
 
-.accueil__promesse {
-  font-family: var(--display);
-  font-size: clamp(1.1875rem, 4.5vw, 1.625rem);
-  letter-spacing: -0.015em;
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 3px solid var(--rose);
-  display: inline-block;
-}
-
-.accueil__texte {
-  max-width: 32rem;
-  margin-top: 1.25rem;
+/* Le paragraphe d'accueil et les chapôs de section jouent le même rôle —
+   du texte secondaire sous un titre — donc même gris et même largeur.
+   La règle est ici, à côté du premier des deux, et la partie 6 ne fait
+   plus qu'ajouter la marge propre au chapô. */
+.accueil__promesse,
+.section__chapo {
+  max-width: var(--mesure);
   color: var(--gris);
 }
 
-.accueil__actions { margin-top: 2.25rem; }
+/* `inline-block` pour que le filet rose s'arrête à la fin du texte au
+   lieu de traverser toute la largeur. */
+.accueil__promesse {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--rose);
+}
 
-/* ── Bouton ──────────────────────────────────────────────────────────── */
+.accueil__actions {
+  margin-top: 2.25rem;
+}
 
 .bouton {
   display: inline-block;
-  min-height: 48px;
+  min-height: 48px;   /* assez haut pour être visé au doigt */
   padding: 0.8125rem 1.875rem;
   background: var(--rose);
   color: var(--papier);
-  font: inherit;
-  font-size: 1rem;
-  /* Merosa n'a qu'une graisse : la présence du bouton tient à son fond rose et
-     à son approche, pas à un gras que le navigateur devrait simuler. */
-  letter-spacing: 0.02em;
   text-decoration: none;
-  border: 0;
   border-radius: var(--r-pilule);
+  /* `font: inherit`, `border` et `cursor` ne changent rien sur un lien.
+     Ils sont là pour qu'un vrai <button> avec cette classe rende à
+     l'identique — un bouton part sinon avec la police et l'interligne du
+     navigateur. Écrire `font` avant les trois réglages qui suivent :
+     cette notation raccourcie remet les autres à leur valeur par défaut. */
+  font: inherit;
+  border: 0;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
-.bouton:hover { background: var(--encre); }
+.bouton:hover {
+  background: var(--encre);
+}
 
-/* ── Sections ────────────────────────────────────────────────────────── */
 
-/* Le bandeau est collant : sans cette réserve, un lien d'ancre amène le titre
-   de section juste dessous, donc caché. */
-.section,
-.accueil {
+/* === 6. Sections ===========================================         */
+
+/* Le bandeau colle en haut : sans cette réserve, cliquer un lien d'ancre
+   amènerait le titre juste dessous, donc caché. */
+.accueil,
+.section {
   scroll-margin-top: 4.5rem;
 }
 
-.section { padding: 3.5rem var(--marge); }
+.section {
+  padding: 3.5rem var(--marge);
+}
 
 .section--pale {
   background: var(--rose-voile);
 }
 
-/* La colonne est tenue par ce conteneur, et par lui seul : la porter sur
-   chaque enfant recentrerait tout élément plus étroit, qui cesserait alors
-   d'être aligné sur son titre. */
+/* Cette boîte, et elle seule, centre le contenu et limite sa largeur.
+   Si on mettait la largeur sur chaque élément, les plus étroits se
+   recentreraient et ne seraient plus alignés sur leur titre. */
 .colonne {
   max-width: var(--colonne);
   margin-inline: auto;
@@ -271,27 +311,25 @@ button:focus-visible {
 }
 
 .section__chapo {
-  margin: 1rem 0 0;
-  color: var(--gris);
-  max-width: 32rem;
+  margin-top: 1rem;
 }
 
-/* ── La carte des prestations ────────────────────────────────────────── */
 
-/* Une ligne par prestation : la vignette à gauche, le nom et le prix sur la
-   même ligne de lecture, la description dessous. Le pouce parcourt la liste
-   d'un seul geste vertical — celui qu'il fait déjà pour lire la page. */
+/* === 7. Prestations ========================================
+   Une ligne par prestation : vignette à gauche, nom et prix sur la même
+   ligne, description en dessous.                                      */
+
 .carte {
-  list-style: none;
   margin: 2.25rem 0 0;
   padding: 0;
+  list-style: none;
 }
 
 .presta {
   display: grid;
   grid-template-columns: var(--vignette) 1fr auto;
-  /* La vignette s'étend sur les deux rangées et les dépasse en hauteur. Sans
-     `1fr` sur la seconde, le surplus se répartirait entre les deux et
+  /* La vignette occupe les deux rangées et dépasse en hauteur. Sans le
+     `1fr` sur la seconde, le surplus serait partagé entre les deux et
      creuserait un vide entre le nom et sa description. */
   grid-template-rows: auto 1fr;
   column-gap: 1.125rem;
@@ -300,15 +338,18 @@ button:focus-visible {
   border-top: 1px solid var(--trait);
 }
 
-.presta:last-child { border-bottom: 1px solid var(--trait); }
+/* Un filet en haut de chaque ligne, plus un seul en bas de la dernière,
+   pour fermer la liste. */
+.presta:last-child {
+  border-bottom: 1px solid var(--trait);
+}
 
 .presta__photo {
   grid-column: 1;
   grid-row: 1 / span 2;
   width: var(--vignette);
-  height: auto;
   aspect-ratio: 4 / 5;
-  object-fit: cover;
+  object-fit: cover;   /* la photo remplit le cadre sans se déformer */
   border-radius: var(--r-media);
   background: var(--rose-voile);
 }
@@ -326,8 +367,8 @@ button:focus-visible {
   font-family: var(--display);
   font-size: 1.125rem;
   line-height: 1.25;
-  font-variant-numeric: lining-nums tabular-nums;
-  white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;  /* chiffres alignés */
+  white-space: nowrap;   /* « 35 € » ne doit jamais se couper en deux */
 }
 
 .presta__detail {
@@ -338,18 +379,30 @@ button:focus-visible {
   color: var(--gris);
 }
 
+/* À partir d'un écran un peu large, la vignette grandit et les lignes
+   respirent. */
 @media (min-width: 30rem) {
-  :root { --vignette: 6.25rem; }
+  :root {
+    --vignette: 6.25rem;
+  }
 
-  .presta { padding: 1.5rem 0; }
+  .presta {
+    padding: 1.5rem 0;
+  }
 
   .presta__nom,
-  .presta__prix { font-size: 1.1875rem; }
+  .presta__prix {
+    font-size: 1.1875rem;
+  }
 }
 
-/* ── Informations pratiques ──────────────────────────────────────────── */
 
-.infos { margin: 2.25rem 0 0; }
+/* === 8. Informations pratiques =============================
+   Une liste de définitions : `dt` est l'intitulé, `dd` la réponse.    */
+
+.infos {
+  margin: 2.25rem 0 0;
+}
 
 .infos dt {
   font-family: var(--display);
@@ -360,13 +413,10 @@ button:focus-visible {
 
 .infos dd {
   margin: 0.25rem 0 1.25rem;
-  color: #3a3532;
-  max-width: 32rem;
+  max-width: var(--mesure);
 }
 
-.infos a { color: var(--rose); }
-
-/* Au-delà de cette largeur, l'intitulé se range en colonne à gauche : la
+/* Sur un écran large, intitulés à gauche et réponses à droite : la
    lecture devient un tableau, qui se parcourt du regard. */
 @media (min-width: 46rem) {
   .infos {
@@ -378,33 +428,29 @@ button:focus-visible {
   .infos dt {
     grid-column: 1;
     margin: 0;
+    padding-bottom: 1.25rem;
   }
 
   .infos dd {
     grid-column: 2;
     margin: 0;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
+    padding: 1.25rem 0;
     border-top: 1px solid var(--trait-appuye);
   }
-
-  .infos dt { padding-bottom: 1.25rem; }
 }
 
-/* ── Agenda ──────────────────────────────────────────────────────────── */
 
-/* L'agenda apporte sa propre marge intérieure : 2,5 rem comme ailleurs
-   creuseraient un vide sous le chapô. */
-.agenda { margin-top: 1.25rem; }
+/* === 9. Agenda =============================================         */
 
-.agenda__mention {
-  font-size: 0.875rem;
-  color: var(--gris);
-  max-width: 32rem;
+/* Le module de réservation apporte ses propres marges intérieures : une
+   marge normale au-dessus creuserait un vide. */
+.agenda {
+  margin-top: 1.25rem;
 }
 
-/* Sans JavaScript, le conteneur reste vide : il ne doit alors réserver aucune
-   place. La hauteur n'apparaît qu'avec l'attribut posé par le script. */
+/* Sans JavaScript, la boîte reste vide et ne doit réserver aucune place.
+   La hauteur n'arrive qu'avec l'attribut `data-etat`, posé par le script
+   au moment où l'agenda se charge. */
 .agenda__cible[data-etat] {
   min-height: 34rem;
   overflow: auto;
@@ -414,29 +460,35 @@ button:focus-visible {
   content: "Chargement de l'agenda…";
   display: block;
   padding: 2.5rem 0;
-  color: var(--gris);
   font-size: 0.9375rem;
+  color: var(--gris);
 }
 
-.agenda__noscript { margin: 1.5rem 0; }
+/* Le bouton de secours, montré uniquement quand JavaScript est coupé. */
+.agenda__noscript {
+  margin: 1.5rem 0;
+}
 
+/* Toujours visible : le message d'erreur ci-dessous y renvoie. */
 .agenda__repli {
   margin-top: 1.5rem;
   font-size: 0.9375rem;
   color: var(--gris);
 }
 
+/* Message affiché par script.js si l'agenda ne répond pas. */
 .agenda__erreur {
   margin-top: 1.5rem;
   padding: 1.125rem 1.25rem;
+  background: var(--rose-voile);
   border-left: 3px solid var(--rose);
   border-radius: 0 var(--r-media) var(--r-media) 0;
-  background: var(--rose-voile);
-  color: var(--encre);
   font-size: 0.9375rem;
+  color: var(--encre);
 }
 
-/* ── Pied de page ────────────────────────────────────────────────────── */
+
+/* === 10. Pied de page ======================================         */
 
 .pied {
   padding: 3rem var(--marge);
@@ -446,40 +498,42 @@ button:focus-visible {
 }
 
 .pied__ligne {
+  max-width: var(--mesure);
   margin: 0 0 0.5rem;
-  max-width: 32rem;
 }
 
-/* ── Mouvement ───────────────────────────────────────────────────────────
-   Tout ce qui suit est facultatif par construction : l'état par défaut de la
-   page, ci-dessus, est l'état visible et utilisable. Rien ici ne conditionne
-   la lecture du contenu — ni sans script, ni sans animation. */
+
+/* === 11. Animations ========================================
+   Rien ici n'est nécessaire à la lecture : la page telle que décrite
+   au-dessus est déjà complète et utilisable. Tout ce bloc est ignoré si
+   la visiteuse a demandé à son système de limiter les animations.     */
 
 @media (prefers-reduced-motion: no-preference) {
 
-  /* Une seule arrivée orchestrée sur la page : celle de l'accueil. */
+  /* Une seule arrivée sur la page : celle de l'accueil, dont les trois
+     éléments montent l'un après l'autre. */
   .accueil__titre,
   .accueil__promesse,
-  .accueil__texte,
   .accueil__actions {
     animation: monter 680ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
   }
 
-  .accueil__promesse { animation-delay: 90ms; }
-  .accueil__texte    { animation-delay: 180ms; }
-  .accueil__actions  { animation-delay: 270ms; }
-
-  @keyframes monter {
-    from { opacity: 0; transform: translateY(0.75rem); }
-    to   { opacity: 1; transform: none; }
+  .accueil__actions {
+    animation-delay: 270ms;
   }
 
-  /* Le filet de l'accroche se trace au lieu d'apparaître. */
+  /* L'accroche fait deux choses à la fois : elle monte, et son filet
+     rose se trace juste après. */
   .accueil__promesse {
     animation-name: monter, tracer;
     animation-duration: 680ms, 700ms;
     animation-delay: 90ms, 420ms;
-    animation-fill-mode: backwards, backwards;
+    animation-fill-mode: backwards;
+  }
+
+  @keyframes monter {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to   { opacity: 1; transform: none; }
   }
 
   @keyframes tracer {
@@ -488,15 +542,16 @@ button:focus-visible {
   }
 
   .bandeau {
-    transition: border-bottom-color 200ms ease, background-color 200ms ease;
+    transition: background-color 200ms ease, border-bottom-color 200ms ease;
   }
 
-  .bouton { transition: background-color 180ms ease; }
+  .bouton {
+    transition: background-color 180ms ease;
+  }
 
-  .bandeau__nav a { transition: border-bottom-color 160ms ease; }
-
-  /* Chaque ligne arrive une fois, à son entrée dans le champ. Le script pose
-     `data-anime` : sans lui, ce bloc ne s'applique jamais. */
+  /* Chaque ligne de tarif apparaît une fois, quand elle entre dans
+     l'écran. Le masquage dépend de `data-anime`, que seul script.js
+     pose : si le script ne se charge pas, tout reste visible. */
   .carte[data-anime] .presta {
     opacity: 0;
     transform: translateY(0.5rem);
@@ -508,5 +563,7 @@ button:focus-visible {
     transform: none;
   }
 
-  .agenda__cible[data-etat="pret"] { animation: monter 420ms ease backwards; }
+  .agenda__cible[data-etat="pret"] {
+    animation: monter 420ms ease backwards;
+  }
 }

@@ -181,14 +181,15 @@ Rien de plus que ce que le besoin exige : HTML, CSS et un peu de JavaScript,
 sans framework ni étape de compilation. Un site de cette taille n'a pas de dette
 à amortir, et la cliente doit pouvoir faire reprendre le code par n'importe qui.
 
-Une seule police, **Merosa**, pour les titres comme pour le texte, **servie
-depuis le dépôt** : 28 Ko en woff2. La charger depuis un hébergeur de polices
-ferait transiter l'adresse IP de chaque visiteuse vers un tiers, ce que le parti
-pris « aucune donnée personnelle » interdit.
+Deux polices, **servies depuis le dépôt** : **Merosa** pour les titres, 28 Ko en
+woff2, et **Montserrat** pour le texte courant, 37 Ko. Les charger depuis un
+hébergeur de polices ferait transiter l'adresse IP de chaque visiteuse vers un
+tiers, ce que le parti pris « aucune donnée personnelle » interdit.
 
-Sa licence reste à vérifier auprès de Grezline Studio : le fichier n'en porte
-aucune mention, et un usage *webfont* sur un site commercial ne découle pas
-d'une licence bureau.
+La licence de Merosa reste à vérifier auprès de Grezline Studio : le fichier
+n'en porte aucune mention, et un usage *webfont* sur un site commercial ne
+découle pas d'une licence bureau. Montserrat est sous SIL OFL 1.1, licence
+jointe.
 
 L'hébergement se fera sur une plateforme statique (Netlify, Cloudflare Pages ou
 GitHub Pages), en HTTPS, sur son propre nom de domaine.
@@ -200,7 +201,7 @@ index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fic
 style.css     feuille de style
 script.js     agenda Cal.com chargé à l'approche de la section, bandeau, arrivées
 images/       sept cartons d'attente en WebP, à écraser par ses photos
-fonts/        Merosa, en .otf d'origine et en .woff2 dérivé
+fonts/        Merosa (.otf d'origine et .woff2 dérivé) et Montserrat, licence jointe
 README.md     ce fichier
 ```
 
