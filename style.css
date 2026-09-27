@@ -447,7 +447,7 @@ button:focus-visible,
    Sans JavaScript, c'est déjà un défilé : on glisse au doigt, à la molette
    ou au pavé tactile, et chaque vidéo garde les commandes du navigateur.
    Le script retire ces commandes pour poser les siennes (`.clip__lecture`,
-   `.clip__son`, `.clip__progres`), ajoute les flèches sous la rangée et
+   `.clip__progres`), ajoute les flèches sous la rangée et
    pose `data-slider`, qui masque alors la barre de défilement.        */
 
 .section--galerie {
@@ -550,39 +550,16 @@ button:focus-visible,
   backdrop-filter: blur(8px);
 }
 
-.clip__son {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-pilule);
-  background: var(--papier-voile);
-  color: var(--encre);
-  cursor: pointer;
-}
-
-.clip svg {
+.clip__pastille svg {
   display: block;
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.625rem;
+  height: 1.625rem;
   fill: currentColor;
 }
 
-.clip__pastille svg {
-  width: 1.625rem;
-  height: 1.625rem;
-}
-
 /* Une icône sur deux, selon l'état. Chaque sélecteur doit peser plus que
-   `.clip svg` ci-dessus, sans quoi les deux icônes s'afficheraient. */
+   `.clip__pastille svg` ci-dessus, sans quoi les deux icônes s'afficheraient. */
 .clip .clip__icone--pause,
-.clip__son[aria-pressed="true"] .clip__icone--muet,
-.clip__son[aria-pressed="false"] .clip__icone--son,
 .est-en-lecture .clip__icone--lecture {
   display: none;
 }

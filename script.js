@@ -212,7 +212,8 @@
      lecteur plus sobre, avec trois règles d'usage :
      — une seule vidéo joue à la fois : en lancer une met les autres en pause ;
      — une vidéo qui sort de l'écran, ou un onglet qu'on quitte, s'arrête ;
-     — le son est coupé d'office, et le choix de le rétablir vaut pour toutes. */
+     — aucune vidéo n'a de son : les fichiers n'ont pas de piste audio, et
+       `muted` reste posé au cas où un fichier en apporterait une. */
 
   (function galerie() {
     var liste = document.getElementById("galerie-liste");
@@ -224,15 +225,11 @@
     var ICONES = {
       lecture: '<svg class="clip__icone--lecture" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
       pause: '<svg class="clip__icone--pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
-      muet: '<svg class="clip__icone--muet" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="M16 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
-      son: '<svg class="clip__icone--son" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
       avant: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
       apres: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>'
     };
 
-    var avecSon = false;
     var enCours = null;
-    var boutonsSon = [];
     var videos = [];
 
     function creerBouton(classe, contenu) {
@@ -241,16 +238,6 @@
       bouton.className = classe;
       bouton.innerHTML = contenu;
       return bouton;
-    }
-
-    function reglerSon(actif) {
-      avecSon = actif;
-      videos.forEach(function (v) {
-        v.muted = !actif;
-      });
-      boutonsSon.forEach(function (b) {
-        b.setAttribute("aria-pressed", String(actif));
-      });
     }
 
     liste.querySelectorAll(".clip").forEach(function (clip) {
@@ -277,11 +264,6 @@
         '<span class="clip__pastille">' + ICONES.lecture + ICONES.pause + "</span>"
       );
 
-      var son = creerBouton("clip__son", ICONES.muet + ICONES.son);
-      son.setAttribute("aria-label", "Son");
-      son.setAttribute("aria-pressed", "false");
-      boutonsSon.push(son);
-
       var progres = document.createElement("div");
       progres.className = "clip__progres";
       progres.setAttribute("aria-hidden", "true");
@@ -289,7 +271,6 @@
       progres.appendChild(jauge);
 
       cadre.appendChild(lecture);
-      cadre.appendChild(son);
       cadre.appendChild(progres);
 
       var alerte = document.createElement("p");
@@ -327,6 +308,12 @@
           enCours = null;
         }
 
+        /* Le bandeau dit qu'il y a un problème ; la console dit lequel. */
+        window.console.warn(
+          "Vidéo indisponible : " + (video.currentSrc || video.getAttribute("src")),
+          video.error ? "(erreur " + video.error.code + " " + video.error.message + ")" : ""
+        );
+
         video.pause();
         clip.classList.remove("est-en-lecture", "est-entamee");
         clip.classList.add("est-en-echec");
@@ -349,7 +336,7 @@
         }
 
         clip.classList.remove("est-en-echec");
-        video.muted = !avecSon;
+        video.muted = true;
         var promesse = video.play();
 
         /* Lecture refusée (politique du navigateur, ou lecture interrompue
@@ -364,10 +351,6 @@
             }
           });
         }
-      });
-
-      son.addEventListener("click", function () {
-        reglerSon(!avecSon);
       });
 
       video.addEventListener("play", function () {
