@@ -199,9 +199,9 @@ GitHub Pages), en HTTPS, sur son propre nom de domaine.
 ```
 index.html    la page ; contenu d'exemple à remplacer, signalé en tête de fichier
 style.css     feuille de style
-script.js     agenda Cal.com chargé à l'approche de la section, bandeau, arrivées
-images/       sept cartons d'attente en WebP, à écraser par ses photos
-images/galerie/  huit autres, carrés, pour la grille de réalisations
+script.js     agenda Cal.com chargé à l'approche de la section, bandeau, lecteur
+              de la galerie, arrivées
+images/galerie/  les vidéos de réalisations (01.mp4…) et leurs affiches (01.webp…)
 fonts/        Merosa (.otf d'origine et .woff2 dérivé) et Montserrat, licence jointe
 README.md     ce fichier
 ```

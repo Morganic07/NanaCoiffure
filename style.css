@@ -11,7 +11,7 @@
      7. Prestations      la liste des tarifs
      8. Informations     la liste « Comment ça se passe »
      9. Agenda           le module de réservation
-    10. Galerie          la grille de photos
+    10. Galerie          la rangée de vidéos et son lecteur
     11. Pied de page
     12. Animations       tout ce qui bouge, et rien d'essentiel
 
@@ -72,6 +72,8 @@
   --rose-voile: #fbf2f5;         /* fond de section et de vignette */
   --trait: rgba(0, 0, 0, 0.1);         /* filets de séparation */
   --trait-appuye: rgba(0, 0, 0, 0.16); /* filets un peu plus visibles */
+  --voile-video: rgba(0, 0, 0, 0.45);        /* dégradé au pied d'une vidéo */
+  --trait-clair: rgba(255, 255, 255, 0.4);   /* rail de progression sur vidéo */
 
   /* Polices : `--display` pour les titres, `--texte` pour le reste.
      Un élément qui prend `--display` garde la graisse 400. */
@@ -83,8 +85,10 @@
   --r-pilule: 999px;
   --r-galerie: 16px;
 
-  /* Galerie : l'écart entre deux photos de la grille */
+  /* Galerie : l'écart entre deux vidéos, et la largeur d'une vidéo —
+     assez étroite sur téléphone pour laisser deviner la suivante. */
   --galerie-espace: 1rem;
+  --clip-largeur: min(15.5rem, 68vw);
 
   /* Tailles de mise en page */
   --marge: 1.25rem;              
@@ -437,40 +441,291 @@ button:focus-visible,
 
 
 /* === 10. Galerie ===========================================
-   Une grille de photos carrées : deux colonnes sur téléphone, trois puis
-   quatre quand l'écran s'élargit. Aucun JavaScript — l'effet d'apparition
-   est en partie 12, et la grille reste lisible sans lui.                */
+   Une rangée de vidéos verticales qui défile de côté, bord à bord de
+   l'écran, la première alignée sur la colonne de texte.
 
-.galerie {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--galerie-espace);
-  margin: 2.25rem 0 0;
-  padding: 0;
-  list-style: none;
+   Sans JavaScript, c'est déjà un défilé : on glisse au doigt, à la molette
+   ou au pavé tactile, et chaque vidéo garde les commandes du navigateur.
+   Le script retire ces commandes pour poser les siennes (`.clip__lecture`,
+   `.clip__son`, `.clip__progres`), ajoute les flèches sous la rangée et
+   pose `data-slider`, qui masque alors la barre de défilement.        */
+
+.section--galerie {
+  padding-inline: 0;
 }
 
-/* La photo grossit à l'intérieur de sa case, qui la recadre. */
+.section--galerie > .colonne,
+.galerie__commandes {
+  box-sizing: content-box;
+  max-width: var(--colonne);
+  margin-inline: auto;
+  padding-inline: var(--marge);
+}
+
+.galerie {
+  /* La marge qui aligne la première vidéo sur la colonne de texte. */
+  --galerie-bord: max(var(--marge), (100% - var(--colonne)) / 2);
+
+  display: flex;
+  gap: var(--galerie-espace);
+  margin: 2.25rem 0 0;
+  padding: 0.25rem var(--galerie-bord) 1rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--galerie-bord);
+}
+
+.galerie[data-slider] {
+  scrollbar-width: none;
+}
+
+.galerie[data-slider]::-webkit-scrollbar {
+  display: none;
+}
+
 .galerie__vue {
+  flex: 0 0 var(--clip-largeur);
+  scroll-snap-align: start;
+}
+
+.clip {
+  margin: 0;
+}
+
+.clip__cadre {
+  position: relative;
   overflow: hidden;
+  border-radius: var(--r-galerie);
+  background: var(--rose-voile);
+}
+
+.clip__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: var(--r-galerie);
+  background: var(--rose-voile);
+}
+
+.clip__legende {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--gris);
+}
+
+/* Toute la vidéo est la commande lecture / pause ; la pastille au centre
+   n'en est que le signe. */
+.clip__lecture {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: linear-gradient(to top, var(--voile-video), transparent 30%);
+  color: var(--encre);
+  cursor: pointer;
+}
+
+/* La vidéo recadre ce qui dépasse : l'anneau passe donc à l'intérieur. */
+.clip__lecture:focus-visible {
+  outline-offset: -5px;
   border-radius: var(--r-galerie);
 }
 
-.galerie__vue img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
+.clip__pastille {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--r-pilule);
+  background: var(--papier-voile);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-@media (min-width: 30rem) {
-  .galerie {
-    grid-template-columns: repeat(3, 1fr);
+.clip__son {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pilule);
+  background: var(--papier-voile);
+  color: var(--encre);
+  cursor: pointer;
+}
+
+.clip svg {
+  display: block;
+  width: 1.375rem;
+  height: 1.375rem;
+  fill: currentColor;
+}
+
+.clip__pastille svg {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+/* Une icône sur deux, selon l'état. Chaque sélecteur doit peser plus que
+   `.clip svg` ci-dessus, sans quoi les deux icônes s'afficheraient. */
+.clip .clip__icone--pause,
+.clip__son[aria-pressed="true"] .clip__icone--muet,
+.clip__son[aria-pressed="false"] .clip__icone--son,
+.est-en-lecture .clip__icone--lecture {
+  display: none;
+}
+
+.est-en-lecture .clip__pastille .clip__icone--pause {
+  display: block;
+}
+
+/* En lecture, la pastille et le dégradé s'effacent. La pastille revient
+   au survol ou au focus, pour dire qu'un geste met en pause. */
+.est-en-lecture .clip__lecture {
+  background: transparent;
+}
+
+.est-en-lecture .clip__pastille {
+  opacity: 0;
+}
+
+.est-en-lecture .clip__lecture:focus-visible .clip__pastille {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .est-en-lecture .clip__lecture:hover .clip__pastille {
+    opacity: 1;
   }
 }
 
+.clip__progres {
+  position: absolute;
+  right: 0.875rem;
+  bottom: 0.875rem;
+  left: 0.875rem;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--r-pilule);
+  background: var(--trait-clair);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.est-entamee .clip__progres {
+  opacity: 1;
+}
+
+.clip__progres span {
+  display: block;
+  height: 100%;
+  background: var(--papier);
+  transform: scaleX(var(--avance, 0));
+  transform-origin: left;
+}
+
+/* Vidéo introuvable : un bandeau le dit, et la pastille propose de
+   réessayer. Le libellé du bouton porte le même message au lecteur
+   d'écran, d'où `aria-hidden` sur ce bandeau. */
+.clip__alerte {
+  position: absolute;
+  right: 0.875rem;
+  bottom: 0.875rem;
+  left: 0.875rem;
+  display: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--r-pilule);
+  background: var(--papier-voile);
+  font-size: 0.8125rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.est-en-echec .clip__alerte {
+  display: block;
+}
+
+/* Sous la rangée : un rail qui situe la partie visible, et deux flèches. */
+.galerie__commandes {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.galerie__commandes[hidden] {
+  display: none;
+}
+
+.galerie__piste {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  margin-right: 0.5rem;
+  border-radius: var(--r-pilule);
+  background: var(--trait-appuye);
+}
+
+.galerie__curseur {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--debut, 0) * 100%);
+  width: calc(var(--part, 1) * 100%);
+  border-radius: inherit;
+  background: var(--encre);
+}
+
+.galerie__fleche {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--trait-appuye);
+  border-radius: var(--r-pilule);
+  background: var(--papier);
+  color: var(--encre);
+  cursor: pointer;
+}
+
+.galerie__fleche svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.galerie__fleche:hover {
+  background: var(--encre);
+  color: var(--papier);
+}
+
+.galerie__fleche[aria-disabled="true"] {
+  background: var(--papier);
+  color: var(--encre);
+  opacity: 0.35;
+  cursor: default;
+}
+
 @media (min-width: 46rem) {
-  .galerie {
-    grid-template-columns: repeat(4, 1fr);
+  :root {
+    --clip-largeur: 15rem;
   }
 }
 
@@ -544,53 +799,32 @@ button:focus-visible,
     animation: monter 420ms ease backwards;
   }
 
-  /* La galerie, en deux temps.
-
-     1. L'entrée : fondu, puis grossissement une fois le fondu terminé —
-        c'est le rôle du délai sur `transform`. Déclenchée une fois, à
-        l'apparition de la photo, par le même mécanisme que les lignes de
-        tarifs : le script pose `data-anime` sur la grille, puis `est-entree`
-        sur chaque case.
-
-        Pourquoi pas une animation liée au défilement ici aussi ? Parce que la
-        galerie est la dernière section : entre le moment où une photo entre
-        dans l'écran et la butée de défilement, il ne reste qu'une centaine de
-        pixels de course. L'animation sauterait au lieu de se dérouler. */
-  .galerie[data-anime] .galerie__vue img {
+  /* La galerie. L'entrée de chaque vidéo : fondu et légère montée, une
+     fois, quand elle arrive dans l'écran — par la page ou par la rangée.
+     Même mécanisme que les lignes de tarifs : le script pose `data-anime`
+     sur la liste, puis `est-entree` sur chaque case. */
+  .galerie[data-anime] .galerie__vue {
     opacity: 0;
-    transform: scale(0.92);
-    transition: opacity 600ms ease, transform 900ms cubic-bezier(0.2, 0.7, 0.3, 1);
-    transition-delay: 0ms, 600ms;   /* le grossissement attend la fin du fondu */
+    transform: translateY(0.75rem);
+    transition: opacity 500ms ease, transform 600ms cubic-bezier(0.2, 0.7, 0.3, 1);
   }
 
-  .galerie[data-anime] .galerie__vue.est-entree img {
+  .galerie[data-anime] .galerie__vue.est-entree {
     opacity: 1;
-    transform: scale(1.08);
+    transform: none;
   }
 
-  /*  2. La sortie : un fondu lié au défilement, qui ne se joue que pendant que
-        la photo quitte l'écran par le haut. Tant que la galerie est la
-        dernière section, cette phase n'est jamais atteinte et n'a donc aucun
-        effet ; elle prendra vie dès qu'une section viendra s'ajouter en
-        dessous.
-
-        `@supports` est indispensable : un navigateur qui ignore
-        `animation-timeline` jouerait ce fondu comme une animation ordinaire,
-        et les photos finiraient invisibles. */
-  @supports (animation-timeline: view()) {
-    .galerie__vue img {
-      /* `forwards` et non `both` : avec `both`, la première étape du fondu
-         (`opacity: 1`) s'appliquerait **avant** la plage de sortie, et une
-         animation l'emporte sur une déclaration normale — elle écraserait le
-         fondu d'entrée ci-dessus, qui ne se verrait jamais. */
-      animation: galerie-sortie linear forwards;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
-    }
+  /* Les flèches font glisser la rangée au lieu de la faire sauter. */
+  .galerie {
+    scroll-behavior: smooth;
   }
 
-  @keyframes galerie-sortie {
-    from { opacity: 1; }
-    to   { opacity: 0; }
+  .clip__pastille,
+  .clip__progres {
+    transition: opacity 200ms ease;
+  }
+
+  .galerie__fleche {
+    transition: background-color 180ms ease, color 180ms ease;
   }
 }

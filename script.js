@@ -1,13 +1,10 @@
-/* Comportements de la page. Trois morceaux indépendants : chacun vérifie ce
+/* Comportements de la page. Quatre morceaux indépendants : chacun vérifie ce
    dont il a besoin et s'abstient si l'élément manque.
 
    Principe commun : sans ce fichier, la page reste lisible et utilisable. Le
-   script ajoute du confort — l'agenda intégré, le filet du bandeau, l'arrivée
-   des lignes de tarifs — jamais une condition d'accès au contenu.
-
-   La galerie passe par la même boucle d'arrivée que les lignes de tarifs :
-   son fondu d'entrée dépend donc de ce fichier. Seul son fondu de sortie est
-   écrit en CSS, piloté par le défilement. */
+   script ajoute du confort — l'agenda intégré, le filet du bandeau, le lecteur
+   de la galerie, l'arrivée des lignes de tarifs et des vidéos — jamais une
+   condition d'accès au contenu. */
 
 (function () {
   "use strict";
@@ -207,6 +204,345 @@
     );
 
     relever();
+  })();
+
+
+  /* La galerie de vidéos. Sans script, chaque vidéo porte les commandes du
+     navigateur et la rangée défile au doigt. Ici on les remplace par un
+     lecteur plus sobre, avec trois règles d'usage :
+     — une seule vidéo joue à la fois : en lancer une met les autres en pause ;
+     — une vidéo qui sort de l'écran, ou un onglet qu'on quitte, s'arrête ;
+     — le son est coupé d'office, et le choix de le rétablir vaut pour toutes. */
+
+  (function galerie() {
+    var liste = document.getElementById("galerie-liste");
+
+    if (!liste) {
+      return;
+    }
+
+    var ICONES = {
+      lecture: '<svg class="clip__icone--lecture" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+      pause: '<svg class="clip__icone--pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
+      muet: '<svg class="clip__icone--muet" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="M16 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+      son: '<svg class="clip__icone--son" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+      avant: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+      apres: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>'
+    };
+
+    var avecSon = false;
+    var enCours = null;
+    var boutonsSon = [];
+    var videos = [];
+
+    function creerBouton(classe, contenu) {
+      var bouton = document.createElement("button");
+      bouton.type = "button";
+      bouton.className = classe;
+      bouton.innerHTML = contenu;
+      return bouton;
+    }
+
+    function reglerSon(actif) {
+      avecSon = actif;
+      videos.forEach(function (v) {
+        v.muted = !actif;
+      });
+      boutonsSon.forEach(function (b) {
+        b.setAttribute("aria-pressed", String(actif));
+      });
+    }
+
+    liste.querySelectorAll(".clip").forEach(function (clip) {
+      var video = clip.querySelector("video");
+      var legende = clip.querySelector("figcaption");
+
+      if (!video) {
+        return;
+      }
+
+      var nom = legende ? legende.textContent.trim() : "Réalisation";
+
+      video.removeAttribute("controls");
+      video.muted = true;
+      videos.push(video);
+
+      var cadre = document.createElement("div");
+      cadre.className = "clip__cadre";
+      video.parentNode.insertBefore(cadre, video);
+      cadre.appendChild(video);
+
+      var lecture = creerBouton(
+        "clip__lecture",
+        '<span class="clip__pastille">' + ICONES.lecture + ICONES.pause + "</span>"
+      );
+
+      var son = creerBouton("clip__son", ICONES.muet + ICONES.son);
+      son.setAttribute("aria-label", "Son");
+      son.setAttribute("aria-pressed", "false");
+      boutonsSon.push(son);
+
+      var progres = document.createElement("div");
+      progres.className = "clip__progres";
+      progres.setAttribute("aria-hidden", "true");
+      var jauge = document.createElement("span");
+      progres.appendChild(jauge);
+
+      cadre.appendChild(lecture);
+      cadre.appendChild(son);
+      cadre.appendChild(progres);
+
+      var alerte = document.createElement("p");
+      alerte.className = "clip__alerte";
+      alerte.setAttribute("aria-hidden", "true");
+      alerte.textContent = "Vidéo indisponible";
+      cadre.appendChild(alerte);
+
+      function etiqueter() {
+        var action = video.paused ? "Lire la vidéo : " : "Mettre en pause : ";
+
+        if (clip.classList.contains("est-en-echec")) {
+          action = "Vidéo indisponible, réessayer : ";
+        }
+
+        lecture.setAttribute("aria-label", action + nom);
+      }
+
+      function suivre() {
+        if (video.duration) {
+          jauge.style.setProperty("--avance", String(video.currentTime / video.duration));
+        }
+
+        if (!video.paused) {
+          window.requestAnimationFrame(suivre);
+        }
+      }
+
+      /* Fichier introuvable ou illisible : sans cela, la vidéo resterait
+         figurée « en lecture » alors que rien ne joue. L'erreur n'arrive
+         sur la vidéo que si elle est déclarée par `src` — d'où l'absence de
+         `<source>` dans le HTML. */
+      function echouer() {
+        if (enCours === video) {
+          enCours = null;
+        }
+
+        video.pause();
+        clip.classList.remove("est-en-lecture", "est-entamee");
+        clip.classList.add("est-en-echec");
+        etiqueter();
+      }
+
+      video.addEventListener("error", echouer);
+
+      lecture.addEventListener("click", function () {
+        if (!video.paused) {
+          video.pause();
+          return;
+        }
+
+        /* Après un échec, le navigateur ne cherche plus de source de
+           lui-même, même si le fichier est revenu : `load()` relance la
+           recherche. */
+        if (video.networkState === video.NETWORK_NO_SOURCE || video.error) {
+          video.load();
+        }
+
+        clip.classList.remove("est-en-echec");
+        video.muted = !avecSon;
+        var promesse = video.play();
+
+        /* Lecture refusée (politique du navigateur, ou lecture interrompue
+           par un `load()`) : on revient à l'état de départ au lieu
+           d'afficher une pause — sauf si une lecture plus récente a pris le
+           relais entre-temps. */
+        if (promesse && promesse.catch) {
+          promesse.catch(function () {
+            if (video.paused) {
+              clip.classList.remove("est-en-lecture", "est-entamee");
+              etiqueter();
+            }
+          });
+        }
+      });
+
+      son.addEventListener("click", function () {
+        reglerSon(!avecSon);
+      });
+
+      video.addEventListener("play", function () {
+        if (enCours && enCours !== video) {
+          enCours.pause();
+        }
+
+        enCours = video;
+        clip.classList.add("est-en-lecture", "est-entamee");
+        etiqueter();
+        suivre();
+      });
+
+      video.addEventListener("pause", function () {
+        clip.classList.remove("est-en-lecture");
+        etiqueter();
+      });
+
+      /* À la fin, la vidéo reprend son affiche : `load()` la remet à zéro,
+         et avec `preload="none"` elle ne retélécharge rien avant le prochain
+         geste. */
+      video.addEventListener("ended", function () {
+        if (enCours === video) {
+          enCours = null;
+        }
+
+        clip.classList.remove("est-en-lecture", "est-entamee");
+        jauge.style.setProperty("--avance", "0");
+        video.load();
+        etiqueter();
+      });
+
+      etiqueter();
+    });
+
+    if ("IntersectionObserver" in window) {
+      var vigie = new IntersectionObserver(
+        function (entrees) {
+          entrees.forEach(function (entree) {
+            if (entree.intersectionRatio < 0.5 && !entree.target.paused) {
+              entree.target.pause();
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+
+      videos.forEach(function (v) {
+        vigie.observe(v);
+      });
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && enCours) {
+        enCours.pause();
+      }
+    });
+
+
+    /* Le défilé. La rangée défile déjà seule ; on ajoute deux flèches, un
+       rail qui situe la partie visible, et les flèches du clavier — que
+       `scroll-snap-type: x mandatory` prive de leur effet natif. */
+
+    var cases = liste.querySelectorAll(".galerie__vue");
+
+    if (!cases.length) {
+      return;
+    }
+
+    liste.setAttribute("data-slider", "");
+
+    var commandes = document.createElement("div");
+    commandes.className = "galerie__commandes";
+
+    var piste = document.createElement("div");
+    piste.className = "galerie__piste";
+    piste.setAttribute("aria-hidden", "true");
+    var curseur = document.createElement("span");
+    curseur.className = "galerie__curseur";
+    piste.appendChild(curseur);
+
+    var avant = creerBouton("galerie__fleche", ICONES.avant);
+    avant.setAttribute("aria-label", "Vidéos précédentes");
+    avant.setAttribute("aria-controls", "galerie-liste");
+
+    var apres = creerBouton("galerie__fleche", ICONES.apres);
+    apres.setAttribute("aria-label", "Vidéos suivantes");
+    apres.setAttribute("aria-controls", "galerie-liste");
+
+    commandes.appendChild(piste);
+    commandes.appendChild(avant);
+    commandes.appendChild(apres);
+    liste.parentNode.insertBefore(commandes, liste.nextSibling);
+
+    function pas() {
+      var ecart = parseFloat(window.getComputedStyle(liste).columnGap) || 0;
+      return cases[0].getBoundingClientRect().width + ecart;
+    }
+
+    /* Une vidéo à la fois sur téléphone ; sur grand écran, on avance d'une
+       page moins une case, pour garder un repère. */
+    function avancer(sens) {
+      var nombre = Math.max(1, Math.floor(liste.clientWidth / pas()) - 1);
+      liste.scrollBy({ left: sens * nombre * pas() });
+    }
+
+    /* `aria-disabled` plutôt que `disabled` : un bouton désactivé perd le
+       focus, et la navigation au clavier retomberait en haut de page. */
+    function mettreAJour() {
+      var reste = liste.scrollWidth - liste.clientWidth;
+
+      commandes.hidden = reste <= 1;
+      avant.setAttribute("aria-disabled", String(liste.scrollLeft <= 1));
+      apres.setAttribute("aria-disabled", String(liste.scrollLeft >= reste - 1));
+      curseur.style.setProperty("--part", String(liste.clientWidth / liste.scrollWidth));
+      curseur.style.setProperty("--debut", String(liste.scrollLeft / liste.scrollWidth));
+    }
+
+    avant.addEventListener("click", function () {
+      if (avant.getAttribute("aria-disabled") !== "true") {
+        avancer(-1);
+      }
+    });
+
+    apres.addEventListener("click", function () {
+      if (apres.getAttribute("aria-disabled") !== "true") {
+        avancer(1);
+      }
+    });
+
+    liste.addEventListener("keydown", function (evenement) {
+      if (evenement.key !== "ArrowLeft" && evenement.key !== "ArrowRight") {
+        return;
+      }
+
+      var courante = evenement.target.closest(".galerie__vue");
+
+      if (!courante) {
+        return;
+      }
+
+      var cible = evenement.key === "ArrowRight"
+        ? courante.nextElementSibling
+        : courante.previousElementSibling;
+
+      evenement.preventDefault();
+
+      if (!cible) {
+        return;
+      }
+
+      var bouton = cible.querySelector(".clip__lecture");
+
+      if (bouton) {
+        bouton.focus({ preventScroll: true });
+      }
+
+      cible.scrollIntoView({ block: "nearest", inline: "start" });
+    });
+
+    var attendu = false;
+
+    function planifier() {
+      if (!attendu) {
+        attendu = true;
+        window.requestAnimationFrame(function () {
+          attendu = false;
+          mettreAJour();
+        });
+      }
+    }
+
+    liste.addEventListener("scroll", planifier, { passive: true });
+    window.addEventListener("resize", planifier);
+    mettreAJour();
   })();
 
 

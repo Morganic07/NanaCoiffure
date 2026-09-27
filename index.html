@@ -152,158 +152,88 @@ Quis veritatis voluptates fugiat ut illo. Consequatur voluptas eius qui. Amet ad
 
     <!-- Une vidéo par case : 01.mp4 et son affiche 01.webp, extraite du milieu
          du clip. Sans script, la rangée défile au doigt ou à la molette et
-         chaque vidéo garde les commandes du navigateur. -->
+         chaque vidéo garde les commandes du navigateur.
+         La vidéo se déclare par `src`, pas par un `<source>` : avec
+         `preload="none"`, un fichier introuvable derrière un `<source>`
+         n'émet aucune erreur dans Chromium, et le lecteur resterait figé. -->
     <ul class="galerie" id="galerie-liste">
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/01.webp" width="480" height="848">
-            <source src="images/galerie/01.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/01.mp4"
+                 poster="images/galerie/01.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses fulani aux pointes bouclées, de profil</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/02.webp" width="480" height="848">
-            <source src="images/galerie/02.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/02.mp4"
+                 poster="images/galerie/02.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses collées en spirale</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/03.webp" width="480" height="848">
-            <source src="images/galerie/03.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/03.mp4"
+                 poster="images/galerie/03.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Longues tresses aux pointes bouclées, de dos</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/04.webp" width="464" height="832">
-            <source src="images/galerie/04.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/04.mp4"
+                 poster="images/galerie/04.webp" width="464" height="832"></video>
           <figcaption class="clip__legende">Grosses tresses collées, vues de dessus</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/05.webp" width="480" height="848">
-            <source src="images/galerie/05.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses collées en spirale, de face</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/06.webp" width="480" height="848">
-            <source src="images/galerie/06.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses fulani, de profil</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/07.webp" width="464" height="832">
-            <source src="images/galerie/07.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses collées épaisses</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/08.webp" width="480" height="848">
-            <source src="images/galerie/08.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/08.mp4"
+                 poster="images/galerie/08.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses sans nœuds, raies nettes</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/09.webp" width="480" height="848">
-            <source src="images/galerie/09.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses collées en spirale, sur le côté</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/10.webp" width="480" height="848">
-            <source src="images/galerie/10.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/10.mp4"
+                 poster="images/galerie/10.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Longues tresses bohèmes, de profil</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/11.webp" width="480" height="848">
-            <source src="images/galerie/11.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/11.mp4"
+                 poster="images/galerie/11.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Box braids, vues de dessus</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/12.webp" width="480" height="848">
-            <source src="images/galerie/12.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses collées en spirale et longueurs</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/13.webp" width="480" height="848">
-            <source src="images/galerie/13.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/13.mp4"
+                 poster="images/galerie/13.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses fines encadrant le visage</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/14.webp" width="480" height="848">
-            <source src="images/galerie/14.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses collées, de côté</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/15.webp" width="480" height="848">
-            <source src="images/galerie/15.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/15.mp4"
+                 poster="images/galerie/15.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses fulani, de face</figcaption>
         </figure>
       </li>
       <li class="galerie__vue">
         <figure class="clip">
           <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/16.webp" width="480" height="848">
-            <source src="images/galerie/16.mp4" type="video/mp4">
-          </video>
-          <figcaption class="clip__legende">Tresses sans nœuds, de profil</figcaption>
-        </figure>
-      </li>
-      <li class="galerie__vue">
-        <figure class="clip">
-          <video class="clip__video" controls muted playsinline preload="none"
-                 poster="images/galerie/17.webp" width="480" height="848">
-            <source src="images/galerie/17.mp4" type="video/mp4">
-          </video>
+                 src="images/galerie/17.mp4"
+                 poster="images/galerie/17.webp" width="480" height="848"></video>
           <figcaption class="clip__legende">Tresses collées en spirale, finitions</figcaption>
         </figure>
       </li>
